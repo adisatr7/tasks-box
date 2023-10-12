@@ -32,7 +32,7 @@ export default function LoginPage() {
   const handleLogin = () => {
     // TODO: Implement login!
 
-    router.push("/main/list")
+    router.push("/main/home")
   }
 
   return (
@@ -70,7 +70,7 @@ export default function LoginPage() {
 
           {/* Login Button */}
           <LongButton label="Masuk" onClick={handleLogin} />
-          
+
         </GlassCard>
       </SafeAreaView>
     </ImageBackground>
