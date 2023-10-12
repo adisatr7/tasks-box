@@ -15,6 +15,7 @@ import { User } from "../../types"
 import { router } from "expo-router"
 import { useAppDispatch } from "../../redux"
 import { setCurrentUser } from "../../redux/slices/authSlice"
+import ImageSelector from "../../components/inputs/ImageSelector"
 
 
 export default function RegisterScreen() {
@@ -101,7 +102,7 @@ export default function RegisterScreen() {
 
         {/* Upload picture | Non functional */}
         <View className="flex-col items-center justify-center w-full h-fit pb-[8px]">
-          <View className={`rounded-full w-[84px] h-[84px] bg-gray-500 ${styles.glassOutline}`}/>
+          <ImageSelector imageUrl={imageUrlInput} setImageUrl={setImageUrlInput}/>
           <Text className="text-bright-gray mt-[4px]">Unggah gambar</Text>
         </View>
 
