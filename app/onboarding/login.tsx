@@ -37,6 +37,13 @@ export default function LoginScreen() {
    * Handler untuk tombol login.
    */
   const handleLogin = () => {
+
+    // Validasi input kosong
+    if (!emailInput || !rawPasswordInput) {
+      Alert.alert("Error", "Mohon isi semua input")
+      return
+    }
+
     login.mutateAsync({ email: emailInput, password: rawPasswordInput })
 
     // Jika login sukses
