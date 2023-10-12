@@ -12,7 +12,7 @@ import EmailIcon from "../components/icons/EmailIcon"
 import LockIcon from "../components/icons/LockIcon"
 import Entry from "../components/inputs/Entry"
 import { styles } from "../styles"
-import { Link } from "expo-router"
+import { Link, router } from "expo-router"
 import LongButton from "../components/inputs/LongButton"
 
 
@@ -24,9 +24,9 @@ export default function LoginPage() {
   /**
    * Hanlder untuk tombol register.
    */
-  // const handleRegister = () => {
-    // TODO: Implement register!
-  // }
+  const handleRegister = () => {
+    router.push("/register")
+  }
 
   /**
    * Handler untuk tombol login.
@@ -55,13 +55,11 @@ export default function LoginPage() {
             value={rawPasswordInput}
             setValue={setRawPasswordInput}
             type="password" />
-          <Link href="/register">
-            <TouchableOpacity activeOpacity={0.5}>
-              <Text className=" text-white text-caption -mt-[4px] mb-[6px] mx-[2px]">
-                Belum punya akun? Klik disini
-              </Text>
-            </TouchableOpacity>
-          </Link>
+          <TouchableOpacity activeOpacity={0.5} onPress={handleRegister}>
+            <Text className=" text-white text-caption -mt-[4px] mb-[6px] mx-[2px]">
+              Belum punya akun? Klik disini
+            </Text>
+          </TouchableOpacity>
           <LongButton label="Masuk" onClick={handleLogin}/>
         </GlassCard>
       </SafeAreaView>
