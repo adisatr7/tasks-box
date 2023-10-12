@@ -1,4 +1,4 @@
-import { TextInput, TouchableOpacity, View } from "react-native"
+import { TextInput, TextInputProps, TouchableOpacity, View } from "react-native"
 import { twMerge } from "tailwind-merge"
 import { styles } from "../../styles"
 import { SvgIcon } from "../../types"
@@ -12,7 +12,7 @@ type Props = {
   label?: string
   placeholder?: string
   value?: string
-  type?: "text" | "password"
+  type?: TextInputProps["keyboardType"] | "password"
   setValue?(value: string): void
   className?: string
   icon?: React.FC<SvgIcon>
@@ -35,6 +35,7 @@ export default function Entry(props: Props) {
         placeholderTextColor="#989898"
         value={props.value}
         onChangeText={props.setValue}
+        keyboardType={props.type === "password" ? "default" : props.type}
         secureTextEntry={props.type === "password" && isHidden}
         className="flex-1 ml-[6px] text-white"
       />
