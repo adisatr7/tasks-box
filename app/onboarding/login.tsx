@@ -31,6 +31,8 @@ export default function LoginPage() {
    */
   const handleLogin = () => {
     // TODO: Implement login!
+
+    router.push("/main/list")
   }
 
   return (
@@ -38,9 +40,13 @@ export default function LoginPage() {
       <View className={`absolute z-0 flex w-full h-full blur-lg ${styles.loginOverlay}`}/>
       <SafeAreaView className="z-10 flex flex-col h-screen m-[18px] items-center justify-center">
         <GlassCard className="py-[12px]">
+
+          {/* Header */}
           <Text className="text-center text-white text-heading-1 mt-[4px] mb-[12px]">
             Login
           </Text>
+
+          {/* Form */}
           <Entry
             placeholder="Masukkan email"
             icon={EmailIcon}
@@ -54,12 +60,17 @@ export default function LoginPage() {
             setValue={setRawPasswordInput}
             type="password"
           />
+
+          {/* Register Button */}
           <TouchableOpacity activeOpacity={0.5} onPress={handleRegister}>
             <Text className=" text-white text-caption -mt-[4px] mb-[6px] mx-[2px]">
               Belum punya akun? Klik disini
             </Text>
           </TouchableOpacity>
+
+          {/* Login Button */}
           <LongButton label="Masuk" onClick={handleLogin} />
+          
         </GlassCard>
       </SafeAreaView>
     </ImageBackground>

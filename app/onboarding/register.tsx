@@ -27,6 +27,7 @@ export default function LoginPage() {
    */
   const handleSubmit = () => {
     // TODO: Implement submit!
+
   }
 
   return (
@@ -34,16 +35,22 @@ export default function LoginPage() {
       <View className={`absolute z-0 flex w-full h-full blur-lg ${styles.loginOverlay}`}/>
       <SafeAreaView className="z-10 flex flex-col h-screen m-[18px] items-center justify-center">
         <GlassCard className="py-[12px]">
+
+          {/* Header */}
           <View className="flex-row items-center w-full bg-red-0 h-fit">
             <BackButton />
             <Text className="text-center text-white text-heading-1 mt-[4px] w-full">
               Daftar Akun Baru
             </Text>
           </View>
+
+          {/* Upload picture | Non functional */}
           <View className="flex-col items-center justify-center w-full h-fit pb-[8px]">
             <View className={`rounded-full w-[84px] h-[84px] bg-gray-500 ${styles.glassOutline}`}/>
             <Text className="text-bright-gray mt-[4px]">Unggah gambar</Text>
           </View>
+
+          {/* Form */}
           <View className="flex-row justify-between w-[49%]">
             <Entry
               placeholder="Nama depan"
@@ -84,11 +91,15 @@ export default function LoginPage() {
             setValue={setRawPasswordInput}
             type="password"
           />
+
+          {/* Gap */}
           <View className="h-[1px]" />
+
+          {/* Register button */}
           <LongButton label="Daftar Sekarang" onClick={handleSubmit} />
+
         </GlassCard>
       </SafeAreaView>
     </ImageBackground>
-
   )
 }
