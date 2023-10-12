@@ -1,40 +1,56 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native"
 import CompletionIcon from "../../components/icons/CompletionIcon"
 import PlusIcon from "../../components/icons/PlusIcon"
 import MainLayout from "../../components/layouts/MainLayout"
 import { styles } from "../../styles"
 import { Task } from "../../types"
+import { router } from "expo-router"
+import { useAppSelector } from "../../redux"
+import useTaskQuery from "../../hooks/useTasksQuery"
 
 
 export default function HomeScreen() {
 
   const [selectedTabIndex, setSelectedTabIndex] = useState<number>(0)
-  const [itemsToShow, setItemsToShow] = useState<Task[]>([
-    {
-      id: 1,
-      title: "Membuat aplikasi mobile",
-      description: "Membuat aplikasi mobile dengan menggunakan React Native",
-      createdAt: new Date().toISOString(),
-      madeBy: {
-        id: 1,
-        email: "x@y.z",
-        firstName: "Helena",
-        lastName: "Frost",
-        exp: 0,
-        level: 1,
-        imageUrl: ""
-      },
-      isCompleted: false,
-      involved: []
-    }
-  ])
+  const [itemsToShow, setItemsToShow] = useState<Task[]>([])
+
+  /**
+   * Hook untuk mengambil data task.
+   */
+  const taskQuery = useTaskQuery()
+
+  /**
+   * Hook untuk mengambil data user yang sedang login.
+   */
+  const currentUser = useAppSelector((state) => state.auth.currentUser)
+
+  /**
+   * Daftar tab yang ada.
+   */
   const tabs = [
     "Semua",
     "Prioritas",
     "Selesai"
   ]
 
+  useEffect(() => {
+    // Jika data task sudah di-fetch
+    if (taskQuery.isSuccess) {
+      // Filter task yang sesuai dengan tab yang dipilih
+      switch (selectedTabIndex) {
+        case 0:
+          setItemsToShow(taskQuery.data.filter(task => !task.isCompleted))
+          break
+        case 1:
+          setItemsToShow(taskQuery.data.filter(task => task.deadline))
+          break
+        case 2:
+          setItemsToShow(taskQuery.data.filter(task => task.isCompleted))
+          break
+      }
+    }
+  }, [])
 
   /**
    * Menghitung jumlah user yang sudah menyelesaikan task
@@ -61,7 +77,7 @@ export default function HomeScreen() {
         className="flex-row items-center w-fit">
         {/* Profile Picture */}
         <View className="rounded-full bg-gray-300 w-[48px] h-[48px] mr-[12px]">
-          {/* <Image/> */}
+          <Image source={{ uri: currentUser.imageUrl }}/>
         </View>
 
         {/* Greetings */}
@@ -69,7 +85,9 @@ export default function HomeScreen() {
           <Text className="text-bright-gray text-caption w-fit">
             Selamat datang,
           </Text>
-          <Text className="text-white text-body w-fit">{"Helena Frost"}</Text>
+          <Text className="text-white text-body w-fit">
+            {`${currentUser.firstName} ${currentUser.lastName}`}
+          </Text>
         </View>
       </TouchableOpacity>
 
@@ -192,7 +210,7 @@ export default function HomeScreen() {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => {
-          // TODO: Implement
+          router.push(`/main/form?`)
         }}
         className="rounded-full bg-primary w-[52px] h-[52px] justify-center items-center absolute bottom-1 right-0 shadow-md">
         <PlusIcon fill="white"/>
