@@ -32,3 +32,9 @@ export type Task = {
   completedAt: string
   involved: InvolvedUser[]
 }
+
+export type SvgIcon = {
+  width?: number
+  height?: number
+  fill?: string
+}
