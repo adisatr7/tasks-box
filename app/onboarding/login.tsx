@@ -1,16 +1,19 @@
 import { router } from "expo-router"
 import { useState } from "react"
-import { Text, TouchableOpacity } from "react-native"
+import { Alert, Text, TouchableOpacity } from "react-native"
 import GlassCard from "../../components/containers/GlassCard"
 import EmailIcon from "../../components/icons/EmailIcon"
 import LockIcon from "../../components/icons/LockIcon"
 import Entry from "../../components/inputs/Entry"
 import LongButton from "../../components/inputs/LongButton"
 import OnboardingLayout from "../../components/layouts/OnboardingLayout"
+import useLogin from "../../hooks/useLogin"
 
 export default function LoginScreen() {
   const [emailInput, setEmailInput] = useState<string>("")
   const [rawPasswordInput, setRawPasswordInput] = useState<string>("")
+
+  const login = useLogin()
 
   /**
    * Hanlder untuk tombol register.
@@ -22,10 +25,15 @@ export default function LoginScreen() {
   /**
    * Handler untuk tombol login.
    */
-  const handleLogin = () => {
-    // TODO: Implement login!
+  const handleLogin = async () => {
+    await login.mutateAsync({ email: emailInput, password: rawPasswordInput })
 
-    router.push("/main/home")
+    if (login.isSuccess)
+      router.push("/main/home")
+    // alert("Login berhasil")
+
+    else
+      Alert.alert("Login gagal")
   }
 
   return (
