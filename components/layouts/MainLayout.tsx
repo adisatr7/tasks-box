@@ -5,7 +5,7 @@ import { StatusBar } from "expo-status-bar"
 
 
 type MainLayoutProps = {
-  children: React.ReactNode
+  children?: React.ReactNode
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
