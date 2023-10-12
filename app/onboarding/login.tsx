@@ -8,12 +8,23 @@ import Entry from "../../components/inputs/Entry"
 import LongButton from "../../components/inputs/LongButton"
 import OnboardingLayout from "../../components/layouts/OnboardingLayout"
 import useLogin from "../../hooks/useLogin"
+import { useAppDispatch } from "../../redux"
+import { setCurrentUser } from "../../redux/slices/authSlice"
+import { User } from "../../types"
 
 export default function LoginScreen() {
   const [emailInput, setEmailInput] = useState<string>("")
   const [rawPasswordInput, setRawPasswordInput] = useState<string>("")
 
+  /**
+   * Hook untuk login.
+   */
   const login = useLogin()
+
+  /**
+   * Hook untuk dispatch Redux state.
+   */
+  const dispatch = useAppDispatch()
 
   /**
    * Hanlder untuk tombol register.
@@ -25,22 +36,24 @@ export default function LoginScreen() {
   /**
    * Handler untuk tombol login.
    */
-  const handleLogin = async () => {
-    await login.mutateAsync({ email: emailInput, password: rawPasswordInput })
+  const handleLogin = () => {
+    login.mutateAsync({ email: emailInput, password: rawPasswordInput })
 
-    if (login.isSuccess)
+    // Jika login sukses
+    .then((data) => {
+      // Simpan data user ke Redux state
+      const user: User = data
+      Alert.alert("User data", JSON.stringify(user))
+      dispatch(setCurrentUser(user))
+
+      // Pindah ke halaman utama
       router.push("/main/home")
-    // alert("Login berhasil")
-
-    else
-      Alert.alert("Login gagal")
+    })
   }
 
   return (
     <OnboardingLayout>
-
       <GlassCard className="py-[12px]">
-
         {/* Header */}
         <Text className="text-center text-white text-heading-1 mt-[4px] mb-[12px]">
           Login
@@ -52,6 +65,7 @@ export default function LoginScreen() {
           icon={EmailIcon}
           value={emailInput}
           setValue={setEmailInput}
+          type="email-address"
         />
         <Entry
           placeholder="Masukkan kata sandi"
