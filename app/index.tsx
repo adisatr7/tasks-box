@@ -6,15 +6,15 @@ import { useEffect } from "react"
 export default function App() {
   useEffect(() => {
     setTimeout(() => {
-      router.push("/login")
+      router.push("/onboarding/login")
     }, 100)
   }, [])
 
   return (
-    <View className="items-center justify-center w-screen h-screen">
-      <Link href="/login">
+    <View className="items-center justify-center w-screen h-screen bg-black">
+      {/* <Link href="/login">
         <Text className="text-heading-1">Loading...</Text>
-      </Link>
+      </Link> */}
     </View>
   )
 }
