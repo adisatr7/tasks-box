@@ -1,8 +1,9 @@
 export type User = {
-  id: number
+  id?: string
   email: string
   firstName: string
   lastName: string
+  position?: string
   imageUrl: string
   level: number
   exp: number
@@ -22,7 +23,7 @@ export type InvolvedUser = User & {
 }
 
 export type Task = {
-  id: number
+  id: string
   title: string
   madeBy: User
   description: string

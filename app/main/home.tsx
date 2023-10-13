@@ -1,40 +1,56 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native"
 import CompletionIcon from "../../components/icons/CompletionIcon"
 import PlusIcon from "../../components/icons/PlusIcon"
 import MainLayout from "../../components/layouts/MainLayout"
 import { styles } from "../../styles"
 import { Task } from "../../types"
+import { router } from "expo-router"
+import { useAppSelector } from "../../redux"
+import useTaskQuery from "../../hooks/useTasksQuery"
 
 
 export default function HomeScreen() {
 
   const [selectedTabIndex, setSelectedTabIndex] = useState<number>(0)
-  const [itemsToShow, setItemsToShow] = useState<Task[]>([
-    {
-      id: 1,
-      title: "Membuat aplikasi mobile",
-      description: "Membuat aplikasi mobile dengan menggunakan React Native",
-      createdAt: new Date().toISOString(),
-      madeBy: {
-        id: 1,
-        email: "x@y.z",
-        firstName: "Helena",
-        lastName: "Frost",
-        exp: 0,
-        level: 1,
-        imageUrl: ""
-      },
-      isCompleted: false,
-      involved: []
-    }
-  ])
+  const [itemsToShow, setItemsToShow] = useState<Task[]>([])
+
+  /**
+   * Hook untuk mengambil data task.
+   */
+  const taskQuery = useTaskQuery()
+
+  /**
+   * Hook untuk mengambil data user yang sedang login.
+   */
+  const currentUser = useAppSelector((state) => state.auth.currentUser)
+
+  /**
+   * Daftar tab yang ada.
+   */
   const tabs = [
     "Semua",
     "Prioritas",
     "Selesai"
   ]
 
+  useEffect(() => {
+    // Jika data task sudah di-fetch
+    if (taskQuery.isSuccess) {
+      // Filter task yang sesuai dengan tab yang dipilih
+      switch (selectedTabIndex) {
+        case 0:
+          setItemsToShow(taskQuery.data.filter(task => !task.isCompleted))
+          break
+        case 1:
+          setItemsToShow(taskQuery.data.filter(task => task.deadline))
+          break
+        case 2:
+          setItemsToShow(taskQuery.data.filter(task => task.isCompleted))
+          break
+      }
+    }
+  }, [])
 
   /**
    * Menghitung jumlah user yang sudah menyelesaikan task
@@ -54,14 +70,22 @@ export default function HomeScreen() {
 
   return (
     <MainLayout>
-
       {/* User Profile Header */}
       <TouchableOpacity
         activeOpacity={0.5}
         className="flex-row items-center w-fit">
         {/* Profile Picture */}
         <View className="rounded-full bg-gray-300 w-[48px] h-[48px] mr-[12px]">
-          {/* <Image/> */}
+          <Image
+            style={{
+              width: "100%",
+              height: "100%",
+              borderRadius: 1000,
+              minHeight: 48,
+              minWidth: 48
+            }}
+            source={{ uri: currentUser.imageUrl }}
+          />
         </View>
 
         {/* Greetings */}
@@ -69,14 +93,14 @@ export default function HomeScreen() {
           <Text className="text-bright-gray text-caption w-fit">
             Selamat datang,
           </Text>
-          <Text className="text-white text-body w-fit">{"Helena Frost"}</Text>
+          <Text className="text-white text-body w-fit">
+            {`${currentUser.firstName} ${currentUser.lastName}`}
+          </Text>
         </View>
       </TouchableOpacity>
 
       {/* Page Title Label */}
-      <Text className="text-white text-heading-1">
-        Daftar Task Anda
-      </Text>
+      <Text className="text-white text-heading-1">Daftar Task Anda</Text>
 
       {/* Tabs */}
       <View className="flex flex-row w-full">
@@ -88,14 +112,16 @@ export default function HomeScreen() {
             className={`flex-col items-center justify-center w-fit h-fit`}>
             <Text
               className={`text-white mr-[18px]
-              ${selectedTabIndex === index
+              ${
+                selectedTabIndex === index
                   ? "font-bold text-body"
-                  : "text-caption"}`}>
+                  : "text-caption"
+              }`}>
               {tabLabel}
             </Text>
-            {selectedTabIndex === index &&
-              <View className="w-[12px] h-[3px] rounded-full bg-bright-gray mr-[18px]"/>
-            }
+            {selectedTabIndex === index && (
+              <View className="w-[12px] h-[3px] rounded-full bg-bright-gray mr-[18px]" />
+            )}
           </TouchableOpacity>
         ))}
       </View>
@@ -103,31 +129,35 @@ export default function HomeScreen() {
 
       {/* Tasks List */}
       <ScrollView>
-        {itemsToShow.length > 0 && itemsToShow.map((task, index) => (
-          <TouchableOpacity
-            key={index}
-            activeOpacity={0.9}
-            onPress={() => {
-              // TODO: Implement!
-            }}
-            className={`p-[10px] flex flex-col w-full h-fit rounded-md ${styles.glass} ${styles.glassOutline}`}>
+        {itemsToShow.length > 0 &&
+          itemsToShow.map((task, index) => (
+            <TouchableOpacity
+              key={index}
+              activeOpacity={0.9}
+              onPress={() => {
+                // TODO: Implement!
+              }}
+              className={`p-[10px] flex flex-col w-full h-fit rounded-md ${styles.glass} ${styles.glassOutline}`}>
+              <View className="flex-row justify-between w-full">
+                {/* Task title */}
+                <Text className="text-white text-heading-2 line-clamp-1">
+                  {task.title}
+                </Text>
 
-            <View className="flex-row justify-between w-full">
-
-              {/* Task title */}
-              <Text className="text-white text-heading-2 line-clamp-1">
-                {task.title}
-              </Text>
-
-              {/* Pics of involved users */}
-              <View className="flex-row items-center gap-x-[8px]">
-                {task.involved.slice(0, 3).map((user, index) => (
-                  <View key={index} className="rounded-full bg-gray-300 w-[24px] h-[24px]">
-                    <Image source={{ uri: user.imageUrl }}/>
-                  </View>
-                ))}
+                {/* Pics of involved users */}
+                <View className="flex-row items-center gap-x-[8px]">
+                  {task.involved.slice(0, 3).map((user, index) => (
+                    <View
+                      key={index}
+                      className="rounded-full bg-gray-300 w-[24px] h-[24px]">
+                      <Image
+                        source={{ uri: user.imageUrl }}
+                        className="w-full h-full"
+                      />
+                    </View>
+                  ))}
+                </View>
               </View>
-            </View>
 
               {/* 2nd row */}
               <View className="flex-row mt-[4px] items-end">
@@ -137,17 +167,17 @@ export default function HomeScreen() {
                     {task.updatedAt ? "Terakhir diubah:" : "Dibuat pada:"}
                   </Text>
                   <Text className="text-white text-body w-fit">
-                  {task.updatedAt
-                    ? new Date(task.updatedAt).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric"
-                    })
-                    : new Date(task.createdAt).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric"
-                    })}
+                    {task.updatedAt
+                      ? new Date(task.updatedAt).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric"
+                        })
+                      : new Date(task.createdAt).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric"
+                        })}
                   </Text>
                 </View>
 
@@ -159,32 +189,33 @@ export default function HomeScreen() {
                   <Text className="text-white text-body">
                     {task.deadline
                       ? new Date(task.deadline).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric"
-                      })
-                      : "-"
-                    }
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric"
+                        })
+                      : "-"}
                   </Text>
                 </View>
 
                 {/* Completion */}
                 <View className="flex-row items-center justify-end">
-                  <CompletionIcon/>
+                  <CompletionIcon />
                   <Text className="text-white text-body ml-[6px]">
                     {countCompletedUsers(task)}/{task.involved.length}
                   </Text>
                 </View>
-
               </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          ))}
       </ScrollView>
 
       {/* If task is empty */}
       {itemsToShow.length === 0 && (
-        <View className={`flex items-center justify-center h-fit py-[18px] rounded-md ${styles.glass} ${styles.glassOutline}`}>
-          <Text className="text-center text-white text-body">Tidak ada task.</Text>
+        <View
+          className={`flex items-center justify-center h-fit py-[18px] rounded-md ${styles.glass} ${styles.glassOutline}`}>
+          <Text className="text-center text-white text-body">
+            Tidak ada task.
+          </Text>
         </View>
       )}
 
@@ -192,10 +223,10 @@ export default function HomeScreen() {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => {
-          // TODO: Implement
+          router.push(`/main/form?`)
         }}
         className="rounded-full bg-primary w-[52px] h-[52px] justify-center items-center absolute bottom-1 right-0 shadow-md">
-        <PlusIcon fill="white"/>
+        <PlusIcon fill="white" />
       </TouchableOpacity>
     </MainLayout>
   )

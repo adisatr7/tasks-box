@@ -1,34 +1,97 @@
 import { useState } from "react"
-import { Text, View } from "react-native";
+import { Alert, Text, View } from "react-native";
 import GlassCard from "../../components/containers/GlassCard"
 import BriefcaseIcon from "../../components/icons/BriefcaseIcon"
 import EmailIcon from "../../components/icons/EmailIcon"
 import LockIcon from "../../components/icons/LockIcon"
 import NameIcon from "../../components/icons/NameIcon"
-import BackButton from "../../components/inputs/BackButton"
+import BackButton from "../../components/buttons/BackButton"
 import Entry from "../../components/inputs/Entry"
-import LongButton from "../../components/inputs/LongButton"
+import LongButton from "../../components/buttons/LongButton"
 import OnboardingLayout from "../../components/layouts/OnboardingLayout"
 import { styles } from "../../styles"
+import useRegister from "../../hooks/useRegister"
+import { User } from "../../types"
+import { router } from "expo-router"
+import { useAppDispatch } from "../../redux"
+import { setCurrentUser } from "../../redux/slices/authSlice"
+import ImageSelector from "../../components/inputs/ImageSelector"
 
 
 export default function RegisterScreen() {
+  const [imageUrlInput, setImageUrlInput] = useState<string>("")
+  const [firstNameInput, setFirstNameInput] = useState<string>("")
+  const [lastNameInput, setLastNameInput] = useState<string>("")
   const [emailInput, setEmailInput] = useState<string>("")
+  const [positionInput, setPositionInput] = useState<string>("")
   const [rawPasswordInput, setRawPasswordInput] = useState<string>("")
+  const [rawPasswordConfirm, setRawPasswordConfirm] = useState<string>("")
+
+  /**
+   * Hook untuk register akun baru.
+   */
+  const register = useRegister()
+
+  /**
+   * Hook untuk dispatch Redux state.
+   */
+  const dispatch = useAppDispatch()
+
+  /**
+   * Mengambil data yang diisi user dari form.
+   *
+   * @returns Data dari form.
+   */
+  const getDataFromForm = (): User => {
+    return {
+      imageUrl: imageUrlInput,
+      firstName: firstNameInput,
+      lastName: lastNameInput,
+      email: emailInput,
+      position: positionInput,
+      level: 1,
+      exp: 0
+    }
+  }
 
   /**
    * Handler untuk tombol login.
    */
-  const handleSubmit = () => {
-    // TODO: Implement submit!
+  const handleSubmit = async () => {
 
+    // Validasi input kosong
+    if (firstNameInput === "" || lastNameInput === "" || emailInput === "" || positionInput === "" || rawPasswordInput === "" || rawPasswordConfirm === "") {
+      Alert.alert("Data tidak lengkap", "Mohon pastikan Anda mengisi semua data yang diperlukan.")
+      return
+    }
+
+    // Validasi password
+    if (rawPasswordInput !== rawPasswordConfirm) {
+      Alert.alert("Konfirmasi kata sandi salah", "Mohon pastikan Anda memasukkan kata sandi yang sama.")
+      return
+    }
+
+    // Lakukan mutasi register
+    await register.mutateAsync({
+      userData: getDataFromForm(),
+      passwordInput: rawPasswordInput
+    }).then((data) => {
+      // Jika sukses, simpan data user ke Redux state
+      const user: User = data
+      dispatch(setCurrentUser(user))
+
+      // Pindah ke halaman utama
+      Alert.alert("Sukses", "Pendaftaran akun berhasil!")
+      setTimeout(() => {
+        router.push("/main/home")
+      }, 300)
+    })
   }
+
 
   return (
     <OnboardingLayout>
-
       <GlassCard className="py-[12px]">
-
         {/* Header */}
         <View className="flex-row items-center w-full bg-red-0 h-fit">
           <BackButton />
@@ -37,9 +100,9 @@ export default function RegisterScreen() {
           </Text>
         </View>
 
-        {/* Upload picture | Non functional */}
+        {/* Upload picture */}
         <View className="flex-col items-center justify-center w-full h-fit pb-[8px]">
-          <View className={`rounded-full w-[84px] h-[84px] bg-gray-500 ${styles.glassOutline}`}/>
+          <ImageSelector imageUrl={imageUrlInput} setImageUrl={setImageUrlInput}/>
           <Text className="text-bright-gray mt-[4px]">Unggah gambar</Text>
         </View>
 
@@ -48,14 +111,14 @@ export default function RegisterScreen() {
           <Entry
             placeholder="Nama depan"
             icon={NameIcon}
-            value={emailInput}
-            setValue={setEmailInput}
+            value={firstNameInput}
+            setValue={setFirstNameInput}
           />
           <View className="w-[6px]" />
           <Entry
             placeholder="Nama belakang"
-            value={emailInput}
-            setValue={setEmailInput}
+            value={lastNameInput}
+            setValue={setLastNameInput}
           />
         </View>
         <Entry
@@ -67,8 +130,8 @@ export default function RegisterScreen() {
         <Entry
           placeholder="Masukkan jabatan"
           icon={BriefcaseIcon}
-          value={emailInput}
-          setValue={setEmailInput}
+          value={positionInput}
+          setValue={setPositionInput}
         />
         <Entry
           placeholder="Masukkan kata sandi"
@@ -80,8 +143,8 @@ export default function RegisterScreen() {
         <Entry
           placeholder="Ulangi kata sandi"
           icon={LockIcon}
-          value={rawPasswordInput}
-          setValue={setRawPasswordInput}
+          value={rawPasswordConfirm}
+          setValue={setRawPasswordConfirm}
           type="password"
         />
 
