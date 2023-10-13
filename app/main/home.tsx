@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux"
 import TaskCard from "../../components/containers/TaskCard"
 import { removeCurrentUser } from "../../redux/slices/authSlice"
 import LogoutIcon from "../../components/icons/LogoutIcon"
+import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
 
 
 export default function HomeScreen() {
@@ -42,7 +43,7 @@ export default function HomeScreen() {
     "Selesai"
   ]
 
-  
+
   useEffect(() => {
     taskQuery.refetch()
 
@@ -51,13 +52,13 @@ export default function HomeScreen() {
       // Filter task yang sesuai dengan tab yang dipilih
       switch (selectedTabIndex) {
         case 0:
-          setItemsToShow(taskQuery.data.filter(task => !task.isCompleted))
+          setItemsToShow(taskQuery.data.filter(task => !checkIfTaskIsCompleted(task)))
           break
         case 1:
-          setItemsToShow(taskQuery.data.filter((task) => !task.isCompleted && task.deadline))
+          setItemsToShow(taskQuery.data.filter((task) => !checkIfTaskIsCompleted(task) && task.deadline))
           break
         case 2:
-          setItemsToShow(taskQuery.data.filter(task => task.isCompleted))
+          setItemsToShow(taskQuery.data.filter(task => checkIfTaskIsCompleted(task)))
           break
       }
     }
@@ -118,8 +119,7 @@ export default function HomeScreen() {
             activeOpacity={0.5}
             onPress={() => setSelectedTabIndex(index)}
             className={`flex-col items-center justify-center w-fit h-fit`}>
-            <Text
-              className={`text-white mr-[18px]
+            <Text className={`text-white mr-[18px]
               ${selectedTabIndex === index
                   ? "font-bold text-body"
                   : "text-caption"
@@ -138,8 +138,8 @@ export default function HomeScreen() {
       <ScrollView>
         {itemsToShow.length > 0 &&
           itemsToShow.map((task, index) => (
-            <View className="pb-[8px]">
-              <TaskCard task={task} key={index}/>
+            <View key={index} className="pb-[8px]">
+              <TaskCard task={task}/>
             </View>
           ))}
         {/* If task is empty */}

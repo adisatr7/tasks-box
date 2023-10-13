@@ -6,6 +6,7 @@ import { useAppDispatch } from "../../redux"
 import { selectTask } from "../../redux/slices/formSlice"
 import { router } from "expo-router"
 import CheckIcon from "../icons/CheckIcon"
+import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
 
 
 type Props = {
@@ -47,12 +48,12 @@ export default function TaskCard({ task }: Props) {
         {/* Task title */}
         <View className="flex-row">
           <Text className={`text-heading-2 line-clamp-1
-            ${task.isCompleted ? "text-dark-gray" : "text-white"}
+            ${checkIfTaskIsCompleted(task) ? "text-dark-gray" : "text-white"}
           `}>
             {task.title}
-            {task.isCompleted && " "}
+            {checkIfTaskIsCompleted(task) && " "}
           </Text>
-          {task.isCompleted && <CheckIcon fill="gray" />}
+          {checkIfTaskIsCompleted(task) && <CheckIcon fill="gray" />}
         </View>
 
         {/* Foto profil user-user terlibat */}
@@ -78,7 +79,7 @@ export default function TaskCard({ task }: Props) {
             {task.updatedAt ? "Terakhir diubah:" : "Dibuat pada:"}
           </Text>
           <Text className={`text-body w-fit
-            ${task.isCompleted ? "text-dark-gray" : "text-white"}
+            ${checkIfTaskIsCompleted(task) ? "text-dark-gray" : "text-white"}
           `}>
             {task.updatedAt
               ? new Date(task.updatedAt).toLocaleDateString("id-ID", {
@@ -95,10 +96,10 @@ export default function TaskCard({ task }: Props) {
         </View>
 
         {/* Deadline */}
-        <View className="flex-col mx-[24px] flex-1">
+        <View className="flex-col mx-[10px] h-fit flex-1">
           <Text className="text-bright-gray text-caption">Deadline:</Text>
-          <Text className={`text-body w-fit
-            ${task.isCompleted ? "text-dark-gray" : "text-white"}
+          <Text numberOfLines={1} className={`text-body w-fit
+            ${checkIfTaskIsCompleted(task) ? "text-dark-gray" : "text-white"}
           `}>
             {task.deadline
               ? new Date(task.deadline).toLocaleDateString("id-ID", {

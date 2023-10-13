@@ -9,8 +9,9 @@ import FinishTaskIcon from "../../components/icons/FinishTaskIcon"
 import useUpdateTask from "../../hooks/useUpdateTask"
 import { router } from "expo-router"
 import { FirebaseError } from "firebase/app"
-import { Task } from "../../types"
-
+import { InvolvedUser, Task } from "../../types"
+import { useQueryClient } from "react-query"
+import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
 
 export default function FormScreen() {
   /**
@@ -24,9 +25,15 @@ export default function FormScreen() {
   const currentUser = useAppSelector((state) => state.auth.currentUser)
 
   /**
+   * Hook untuk mengambil data query client.
+   */
+  const queryClient = useQueryClient()
+
+  /**
    * Hook untuk mengubah data task.
    */
   const updateTask = useUpdateTask()
+
 
   /**
    * Fungsi untuk mengubah format tanggal.
@@ -42,6 +49,7 @@ export default function FormScreen() {
     })
   }
 
+
   /**
    * Fungsi untuk mengecek apakah user sedang terlibat di task ini.
    *
@@ -56,14 +64,12 @@ export default function FormScreen() {
     return false
   }
 
+
   /**
    * Fungsi untuk melibatkan user ke dalam task.
    */
   const joinTask = () => {
-    const task: Task = {
-      ...selectedTask,
-      updatedAt: selectedTask.updatedAt ?? ""
-    }
+    const task: Task = { ...selectedTask }
     task.involved.push({
       ...currentUser,
       isCompleted: false,
@@ -73,6 +79,7 @@ export default function FormScreen() {
     updateTask
       .mutateAsync(task)
       .then(() => {
+        queryClient.invalidateQueries(["tasks"])
         Alert.alert("Berhasil", "Anda berhasil bergabung ke task ini.")
         router.replace("/main/home")
       })
@@ -93,6 +100,7 @@ export default function FormScreen() {
     joinTask()
   }
 
+
   /**
    * Fungsi untuk menghapus user dari task.
    */
@@ -105,10 +113,7 @@ export default function FormScreen() {
       )
     }
 
-    const task: Task = {
-      ...selectedTask,
-      updatedAt: selectedTask.updatedAt ?? ""
-    }
+    const task: Task = { ...selectedTask }
     const updatedInvolved = task.involved.filter((user) => {
       return user.id !== currentUser.id
     })
@@ -117,6 +122,7 @@ export default function FormScreen() {
     updateTask
       .mutateAsync(task)
       .then(() => {
+        queryClient.invalidateQueries(["tasks"])
         Alert.alert("Berhasil", "Anda berhasil keluar dari task ini.")
         router.replace("/main/home")
       })
@@ -124,6 +130,7 @@ export default function FormScreen() {
         Alert.alert("Gagal", error.message)
       })
   }
+
 
   /**
    * Fungsi untuk menghapus user dari task.
@@ -137,46 +144,57 @@ export default function FormScreen() {
     abandonTask()
   }
 
+
   /**
    * Fungsi untuk menandai task sebagai selesai.
    */
-  const setTaskToFinished = async () => {
+  const setTaskToFinished = () => {
+    // Cari index user yang sedang login.
     const userIndex = selectedTask.involved.findIndex((user) => {
       return user.id === currentUser.id
     })
 
     // Atur task menjadi selesai untuk user yang sedang login.
-    const taskToBeUpdated: Task = {
-      ...selectedTask,
-      updatedAt: selectedTask.updatedAt !== ""
-        ? selectedTask.updatedAt
-        : "",
-      involved: selectedTask.involved
-    }
-    taskToBeUpdated.involved[userIndex].isCompleted = true
-    taskToBeUpdated.involved[userIndex].completedAt = new Date().toISOString()
 
-    // Cek jika semua orang yang terlibat sudah menyelesaikan task.
-    let isTaskCompleted = true
-    taskToBeUpdated.involved.forEach((user) => {
-      if (!user.isCompleted) {
-        isTaskCompleted = false
-      }
+    let involvedUsers: InvolvedUser[] = []
+    selectedTask.involved.forEach((user) => {
+      involvedUsers.push({
+        ...user,
+        isCompleted: user.id === currentUser.id ? true : user.isCompleted,
+        completedAt: user.id === currentUser.id ? new Date().toISOString() : user.completedAt
+      })
     })
 
+    // Cek jika semua orang yang terlibat sudah menyelesaikan task.
+    // let isTaskCompleted = true
+    // taskToBeUpdated.involved.forEach((user) => {
+    //   if (!user.isCompleted) {
+    //     isTaskCompleted = false
+    //   }
+    // })
+
     // Jika semua orang sudah menyelesaikan task, atur task menjadi selesai.
-    if (isTaskCompleted) {
-      taskToBeUpdated.isCompleted = true
-      taskToBeUpdated.completedAt = new Date().toISOString()
+    // if (isTaskCompleted) {
+    //   taskToBeUpdated.isCompleted = true
+    //   taskToBeUpdated.completedAt = new Date().toISOString()
+    // }
+
+    let taskToBeUpdated: Task = {
+      ...selectedTask,
+      involved: involvedUsers
     }
 
-    console.log("Task", taskToBeUpdated)
-    console.log("Involved", taskToBeUpdated.involved)
+    console.log("involvedUsers", involvedUsers)
+    console.log("Task's involved", taskToBeUpdated.involved)
+
+    // console.log("Task", taskToBeUpdated)
+    // console.log("Involved", taskToBeUpdated.involved)
 
     // Kirim data task yang sudah diubah ke server.
-    await updateTask
+    updateTask
       .mutateAsync(taskToBeUpdated)
       .then(() => {
+        queryClient.invalidateQueries(["tasks"])
         Alert.alert("Berhasil", "Task berhasil ditandai selesai.")
         router.replace("/main/home")
       })
@@ -229,7 +247,7 @@ export default function FormScreen() {
               {selectedTask.involved[0].id === currentUser.id && " (Saya)"}
             </Text>
             <Text className={whiteTextStyle}>
-              {selectedTask.isCompleted ? "Selesai" : "Belum selesai"}
+              {checkIfTaskIsCompleted(selectedTask) ? "Selesai" : "Belum selesai"}
             </Text>
             <Text className={whiteTextStyle}>
               {selectedTask.updatedAt
@@ -249,7 +267,7 @@ export default function FormScreen() {
       <View className="h-[12px]" />
 
       <GlassCard>
-        <View className="flex-row items-center gap-x-[8px] pb-[6px]">
+        <View className="flex-row items-center gap-x-[8px] pb-[4px]">
           {/* Foto profil user-user terlibat */}
           <View className="flex-row items-center w-[36px]">
             {selectedTask.involved.slice(0, 3).map((user, index) => (
@@ -274,25 +292,27 @@ export default function FormScreen() {
           <View className="flex-1" />
 
           {/* Tombol */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => {
-              if (currentUserIsInvolved) {
-                handleAbandonTask()
-              } else {
-                handleJoinTask()
-              }
-            }}>
-            <Text className={`${whiteTextStyle} mr-[4px]`}>
-              {currentUserIsInvolved ? "Keluar" : "Gabung"}
-            </Text>
-          </TouchableOpacity>
+          {!checkIfTaskIsCompleted(selectedTask) && (
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                if (currentUserIsInvolved) {
+                  handleAbandonTask()
+                } else {
+                  handleJoinTask()
+                }
+              }}>
+              <Text className={`${whiteTextStyle} mr-[4px]`}>
+                {currentUserIsInvolved ? "Keluar" : "Gabung"}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </GlassCard>
 
       <View className="flex-1" />
 
-      {currentUserIsInvolved && (
+      {!checkIfTaskIsCompleted(selectedTask) && currentUserIsInvolved && (
         <LongButton
           label="Tandai Selesai"
           icon={FinishTaskIcon}
