@@ -42,10 +42,12 @@ export default function useTaskQuery() {
         return dateB.getTime() - dateA.getTime()
       })
 
-      return tasks
+      return Promise.resolve(tasks)
     },
     retry: 3,
     refetchOnMount: true,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    staleTime: 1000 * 60 * 5      // 5 menit
   })
 }

@@ -71,7 +71,7 @@ export default function FormScreen() {
     // Jika berhasil, kembali ke halaman sebelumnya
     .then(() => {
       Alert.alert("Berhasil", "Task berhasil dibuat!")
-      queryClient.invalidateQueries("tasks")
+      queryClient.invalidateQueries(["tasks"])
       setTimeout(() => {
         router.back()
       }, 100)

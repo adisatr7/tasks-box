@@ -39,9 +39,13 @@ export default function HomeScreen() {
   const tabs = [
     "Semua",
     "Prioritas",
+    "Selesai"
   ]
 
+  
   useEffect(() => {
+    taskQuery.refetch()
+
     // Jika data task sudah di-fetch
     if (taskQuery.isSuccess) {
       // Filter task yang sesuai dengan tab yang dipilih
@@ -50,11 +54,14 @@ export default function HomeScreen() {
           setItemsToShow(taskQuery.data.filter(task => !task.isCompleted))
           break
         case 1:
-          setItemsToShow(taskQuery.data.filter(task => task.deadline))
+          setItemsToShow(taskQuery.data.filter((task) => !task.isCompleted && task.deadline))
+          break
+        case 2:
+          setItemsToShow(taskQuery.data.filter(task => task.isCompleted))
           break
       }
     }
-  }, [taskQuery.status, selectedTabIndex])
+  }, [taskQuery.status, taskQuery.data, selectedTabIndex])
 
 
   return (
@@ -113,29 +120,27 @@ export default function HomeScreen() {
             className={`flex-col items-center justify-center w-fit h-fit`}>
             <Text
               className={`text-white mr-[18px]
-              ${
-                selectedTabIndex === index
+              ${selectedTabIndex === index
                   ? "font-bold text-body"
                   : "text-caption"
               }`}>
               {tabLabel}
             </Text>
             {selectedTabIndex === index && (
-              <View className="w-[12px] h-[3px] rounded-full bg-bright-gray mr-[18px]" />
+              <View className="w-[12px] h-[3px] rounded-full bg-bright-gray mr-[18px]"/>
             )}
           </TouchableOpacity>
         ))}
       </View>
-      <View className="w-full h-[1px] rounded-full bg-bright-gray -top-[12px]" />
+      <View className="w-full h-[1px] rounded-full bg-bright-gray -top-[12px]"/>
 
       {/* Tasks List */}
       <ScrollView>
         {itemsToShow.length > 0 &&
           itemsToShow.map((task, index) => (
-            <>
-              <TaskCard task={task} key={index} />
-              <View className="h-[8px]"/>
-            </>
+            <View className="pb-[8px]">
+              <TaskCard task={task} key={index}/>
+            </View>
           ))}
         {/* If task is empty */}
         {itemsToShow.length === 0 && (
