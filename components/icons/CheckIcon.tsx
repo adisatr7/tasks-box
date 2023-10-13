@@ -1,0 +1,12 @@
+import { SvgXml } from "react-native-svg"
+import { SvgIcon } from "../../types"
+
+
+export default function CheckIcon({ width = 24, height = 24, fill = "white" }: SvgIcon) {
+  const svgString = `
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="25" fill="currentColor" viewBox="0 0 24 25">
+    <path d="M18.71 7.71a1 1 0 0 0-1.42 0l-7.45 7.46-3.13-3.14a1.02 1.02 0 1 0-1.42 1.47l3.84 3.84a1.001 1.001 0 0 0 1.42 0l8.16-8.16a1 1 0 0 0 0-1.47Z"/>
+  </svg>`
+
+  return <SvgXml xml={svgString} width={width} height={height} fill={fill} />
+}

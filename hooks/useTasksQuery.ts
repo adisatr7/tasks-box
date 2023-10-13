@@ -48,6 +48,6 @@ export default function useTaskQuery() {
     refetchOnMount: true,
     refetchOnWindowFocus: true,
     refetchOnReconnect: true,
-    staleTime: 1000 * 60 * 5      // 5 menit
+    staleTime: 1000 * 60        // 5 menit
   })
 }

@@ -5,6 +5,7 @@ import CompletionIcon from "../icons/CompletionIcon"
 import { useAppDispatch } from "../../redux"
 import { selectTask } from "../../redux/slices/formSlice"
 import { router } from "expo-router"
+import CheckIcon from "../icons/CheckIcon"
 
 
 type Props = {
@@ -16,6 +17,7 @@ export default function TaskCard({ task }: Props) {
    * Hook untuk dispatch Redux state.
    */
   const dispatch = useAppDispatch()
+
 
   /**
    * Menghitung jumlah user yang sudah menyelesaikan task
@@ -43,12 +45,18 @@ export default function TaskCard({ task }: Props) {
       className={`p-[10px] flex flex-col w-full h-fit rounded-md ${styles.glass} ${styles.glassOutline}`}>
       <View className="flex-row justify-between w-full">
         {/* Task title */}
-        <Text className="text-white text-heading-2 line-clamp-1">
-          {task.title}
-        </Text>
+        <View className="flex-row">
+          <Text className={`text-heading-2 line-clamp-1
+            ${task.isCompleted ? "text-dark-gray" : "text-white"}
+          `}>
+            {task.title}
+            {task.isCompleted && " "}
+          </Text>
+          {task.isCompleted && <CheckIcon fill="gray" />}
+        </View>
 
         {/* Foto profil user-user terlibat */}
-        <View className="flex-row items-center w-[36px]">
+        <View className="flex-row-col items-center w-[36px]">
           {task.involved.slice(0, 3).map((user, index) => (
             <View
               key={index}
@@ -69,7 +77,9 @@ export default function TaskCard({ task }: Props) {
           <Text className="text-bright-gray text-caption">
             {task.updatedAt ? "Terakhir diubah:" : "Dibuat pada:"}
           </Text>
-          <Text className="text-white text-body w-fit">
+          <Text className={`text-body w-fit
+            ${task.isCompleted ? "text-dark-gray" : "text-white"}
+          `}>
             {task.updatedAt
               ? new Date(task.updatedAt).toLocaleDateString("id-ID", {
                   day: "numeric",
@@ -86,10 +96,10 @@ export default function TaskCard({ task }: Props) {
 
         {/* Deadline */}
         <View className="flex-col mx-[24px] flex-1">
-          <Text className="text-bright-gray text-caption">
-            Deadline:
-          </Text>
-          <Text className="text-white text-body">
+          <Text className="text-bright-gray text-caption">Deadline:</Text>
+          <Text className={`text-body w-fit
+            ${task.isCompleted ? "text-dark-gray" : "text-white"}
+          `}>
             {task.deadline
               ? new Date(task.deadline).toLocaleDateString("id-ID", {
                   day: "numeric",
@@ -102,7 +112,7 @@ export default function TaskCard({ task }: Props) {
 
         {/* Completion */}
         <View className="flex-row items-center justify-end">
-          <CompletionIcon/>
+          <CompletionIcon />
           <Text className="text-white text-body ml-[6px]">
             {countCompletedUsers()}/{task.involved.length}
           </Text>
