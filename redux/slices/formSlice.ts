@@ -53,4 +53,4 @@ export const formSlice = createSlice({
 })
 
 export default formSlice.reducer
-export const { setFormMode, selectTask: setItem, clearSelection: clearItem } = formSlice.actions
+export const { setFormMode, selectTask, clearSelection } = formSlice.actions
