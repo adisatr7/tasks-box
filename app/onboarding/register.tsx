@@ -1,21 +1,21 @@
+import { router } from "expo-router"
 import { useState } from "react"
-import { Alert, Text, View } from "react-native";
+import { Alert, Text, View } from "react-native"
+import BackButton from "../../components/buttons/BackButton"
+import LongButton from "../../components/buttons/LongButton"
 import GlassCard from "../../components/containers/GlassCard"
 import BriefcaseIcon from "../../components/icons/BriefcaseIcon"
 import EmailIcon from "../../components/icons/EmailIcon"
 import LockIcon from "../../components/icons/LockIcon"
 import NameIcon from "../../components/icons/NameIcon"
-import BackButton from "../../components/buttons/BackButton"
 import Entry from "../../components/inputs/Entry"
-import LongButton from "../../components/buttons/LongButton"
+import ImageSelector from "../../components/inputs/ImageSelector"
 import OnboardingLayout from "../../components/layouts/OnboardingLayout"
-import { styles } from "../../styles"
 import useRegister from "../../hooks/useRegister"
-import { User } from "../../types"
-import { router } from "expo-router"
 import { useAppDispatch } from "../../redux"
 import { setCurrentUser } from "../../redux/slices/authSlice"
-import ImageSelector from "../../components/inputs/ImageSelector"
+import { styles } from "../../styles"
+import { User } from "../../types"
 
 
 export default function RegisterScreen() {
