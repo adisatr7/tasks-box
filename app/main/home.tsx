@@ -213,17 +213,17 @@ export default function HomeScreen() {
               </View>
             </TouchableOpacity>
           ))}
+        {/* If task is empty */}
+        {itemsToShow.length === 0 && (
+          <View
+            className={`flex items-center justify-center h-fit py-[18px] rounded-lg ${styles.glass} ${styles.glassOutline}`}>
+            <Text className="text-center text-white text-body">
+              Tidak ada task.
+            </Text>
+          </View>
+        )}
       </ScrollView>
 
-      {/* If task is empty */}
-      {itemsToShow.length === 0 && (
-        <View
-          className={`flex items-center justify-center h-fit py-[18px] rounded-md ${styles.glass} ${styles.glassOutline}`}>
-          <Text className="text-center text-white text-body">
-            Tidak ada task.
-          </Text>
-        </View>
-      )}
 
       {/* Floating action button */}
       <TouchableOpacity
