@@ -50,7 +50,7 @@ export default function LoginScreen() {
     .then((data) => {
       // Simpan data user ke Redux state
       const user: User = data
-      Alert.alert("User data", JSON.stringify(user))
+      Alert.alert(typeof(user), JSON.stringify(user))
       dispatch(setCurrentUser(user))
 
       // Pindah ke halaman utama

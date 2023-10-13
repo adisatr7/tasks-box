@@ -3,7 +3,7 @@ import { auth, db, storage } from "../firebase/index"
 import { useMutation } from "react-query"
 import { FirebaseError } from "firebase/app"
 import { Alert } from "react-native"
-import { addDoc, collection } from "firebase/firestore"
+import { addDoc, collection, doc, setDoc } from "firebase/firestore"
 import { User } from "../types"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 
@@ -20,7 +20,7 @@ export default function useRegister() {
         userData.imageUrl = await uploadImageToCloud(userData.imageUrl)
           .catch(() => "-1")
 
-        await addDoc(dbRef, userData)
+        await setDoc(doc(dbRef, userData.id), userData)
 
         const user: User = {
           id: userCredential.user.uid,
@@ -75,7 +75,7 @@ async function uploadImageToCloud(imageUrl: string): Promise<string> {
   const time = new Date().getTime()
 
   // Upload gambar ke cloud
-  const uploadDirRef = ref(storage, `images/user/${file}-${time}.png`)
+  const uploadDirRef = ref(storage, `images/user/${file}-${time}.jpg`)
   await uploadBytes(uploadDirRef, blob)
 
   // Set state image url ke url gambar yang sudah diupload

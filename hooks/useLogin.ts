@@ -24,9 +24,8 @@ export default function useLogin() {
           position: userData.get("position"),
           imageUrl: userData.get("imageUrl"),
           level: userData.get("level"),
-          exp: userData.get("exp"),
+          exp: userData.get("exp")
         }
-
         return Promise.resolve(user)
       }
       catch (error) {

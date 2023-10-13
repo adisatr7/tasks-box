@@ -100,7 +100,7 @@ export default function RegisterScreen() {
           </Text>
         </View>
 
-        {/* Upload picture | Non functional */}
+        {/* Upload picture */}
         <View className="flex-col items-center justify-center w-full h-fit pb-[8px]">
           <ImageSelector imageUrl={imageUrlInput} setImageUrl={setImageUrlInput}/>
           <Text className="text-bright-gray mt-[4px]">Unggah gambar</Text>
