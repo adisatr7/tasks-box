@@ -61,7 +61,7 @@ export default function LoginScreen() {
 
       // Pindah ke halaman utama
       setTimeout(() => {
-        router.push("/main/home")
+        router.replace("/main/home")
       }, 10)
     })
   }

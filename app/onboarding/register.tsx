@@ -83,7 +83,7 @@ export default function RegisterScreen() {
       // Pindah ke halaman utama
       Alert.alert("Sukses", "Pendaftaran akun berhasil!")
       setTimeout(() => {
-        router.push("/main/home")
+        router.replace("/main/home")
       }, 300)
     })
   }
