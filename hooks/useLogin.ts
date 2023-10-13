@@ -26,20 +26,26 @@ export default function useLogin() {
           level: userData.get("level"),
           exp: userData.get("exp"),
         }
-        
-        return user
+
+        return Promise.resolve(user)
       }
       catch (error) {
-        throw new FirebaseError(error.code, error.message)
+        Promise.reject(new FirebaseError(error.code, error.message))
       }
     },
-    onError: (error) => {
-      if (error.message === "Firebase: Error (auth/invalid-email).")
+    onError: (error: FirebaseError) => {
+      if (error.message === "Firebase: Error (auth/invalid-email).") {
         Alert.alert("Akun tidak ditemukan", "Silahkan coba lagi!")
-      else if (error.message === "Firebase: Error (auth/invalid-login-credentials).")
+        return Promise.reject(new FirebaseError(error.code, "Akun tidak ditemukan"))
+      }
+      else if (error.message === "Firebase: Error (auth/invalid-login-credentials).") {
         Alert.alert("Kata sandi salah", "Silahkan coba lagi!")
-      else
+        return Promise.reject(new FirebaseError(error.code, "Kata sandi salah"))
+      }
+      else {
         Alert.alert("Error", error.message)
+        return Promise.reject(new FirebaseError(error.code, error.message))
+      }
     }
   })
 }
