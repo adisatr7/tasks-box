@@ -10,11 +10,12 @@ import AddTaskicon from "../../components/icons/AddTaskicon"
 import useCreateTask from "../../hooks/useCreateTask"
 import { router } from "expo-router"
 import Switch from "../../components/inputs/Switch"
+import { useQueryClient } from "react-query"
 
 
 export default function FormScreen() {
-  const mode = useAppSelector((state) => state.form.mode)
-  const selectedTask = useAppSelector((state) => state.form.selectedTask)
+  // const mode = useAppSelector((state) => state.form.mode)
+  // const selectedTask = useAppSelector((state) => state.form.selectedTask)
 
   const [judulInput, setJudulInput] = useState<string>("")
   const [hasDeadline, setHasDeadline] = useState<boolean>(true)
@@ -25,6 +26,11 @@ export default function FormScreen() {
    * Hook untuk membuat task baru.
    */
   const createTask = useCreateTask()
+
+  /**
+   * Hook untuk mengakses query client.
+   */
+  const queryClient = useQueryClient()
 
   /**
    * Hook untuk mengambil data user yang sedang login.
@@ -51,11 +57,13 @@ export default function FormScreen() {
         isCompleted: false,
         createdAt: new Date().toISOString(),
         deadline: hasDeadline && deadline.toISOString(),
+        completedAt: "",
+        updatedAt: "",
         involved: [
           {
             ...currentUser,
             isCompleted: false,
-            completedAt: null
+            completedAt: ""
           }
         ]
     }})
@@ -63,6 +71,7 @@ export default function FormScreen() {
     // Jika berhasil, kembali ke halaman sebelumnya
     .then(() => {
       Alert.alert("Berhasil", "Task berhasil dibuat!")
+      queryClient.invalidateQueries("tasks")
       setTimeout(() => {
         router.back()
       }, 100)

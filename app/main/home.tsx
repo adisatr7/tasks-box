@@ -9,6 +9,8 @@ import { useAppSelector } from "../../redux"
 import useTaskQuery from "../../hooks/useTasksQuery"
 import { useDispatch } from "react-redux"
 import TaskCard from "../../components/containers/TaskCard"
+import { removeCurrentUser } from "../../redux/slices/authSlice"
+import LogoutIcon from "../../components/icons/LogoutIcon"
 
 
 export default function HomeScreen() {
@@ -37,7 +39,6 @@ export default function HomeScreen() {
   const tabs = [
     "Semua",
     "Prioritas",
-    "Selesai"
   ]
 
   useEffect(() => {
@@ -51,19 +52,16 @@ export default function HomeScreen() {
         case 1:
           setItemsToShow(taskQuery.data.filter(task => task.deadline))
           break
-        case 2:
-          setItemsToShow(taskQuery.data.filter(task => task.isCompleted))
-          break
       }
     }
-  }, [taskQuery.status])
+  }, [taskQuery.status, selectedTabIndex])
 
 
   return (
     <MainLayout>
       {/* User Profile Header */}
-      <TouchableOpacity
-        activeOpacity={0.5}
+      <View
+        // activeOpacity={0.5}
         className="flex-row items-center w-fit">
         {/* Profile Picture */}
         <View className="rounded-full bg-gray-300 w-[48px] h-[48px] mr-[12px]">
@@ -88,7 +86,19 @@ export default function HomeScreen() {
             {`${currentUser.firstName} ${currentUser.lastName}`}
           </Text>
         </View>
-      </TouchableOpacity>
+
+        <View className="flex-1" />
+
+        {/* Tombol logout */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            dispatch(removeCurrentUser())
+            router.replace("/onboarding/login")
+          }}>
+          <LogoutIcon fill="#FF352B" />
+        </TouchableOpacity>
+      </View>
 
       {/* Page Title Label */}
       <Text className="text-white text-heading-1">Daftar Task Anda</Text>
@@ -122,7 +132,10 @@ export default function HomeScreen() {
       <ScrollView>
         {itemsToShow.length > 0 &&
           itemsToShow.map((task, index) => (
-            <TaskCard task={task} key={index}/>
+            <>
+              <TaskCard task={task} key={index} />
+              <View className="h-[8px]"/>
+            </>
           ))}
         {/* If task is empty */}
         {itemsToShow.length === 0 && (
@@ -135,12 +148,10 @@ export default function HomeScreen() {
         )}
       </ScrollView>
 
-
       {/* Floating action button */}
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => {
-
           router.push(`/main/form`)
         }}
         className="rounded-full bg-primary w-[52px] h-[52px] justify-center items-center absolute bottom-1 right-0 shadow-md">

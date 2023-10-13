@@ -1,4 +1,5 @@
 export const styles = {
+  semiTransparentText: "text-bright-gray text-body",
   glass: "bg-glass/70",
   glassOutline: "border border-glass-outline/30",
   glassInput: "bg-glass-input/[50%]",

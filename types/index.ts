@@ -19,7 +19,7 @@ export type UsersQuery = {
 
 export type InvolvedUser = User & {
   isCompleted: boolean
-  completedAt: string | null
+  completedAt: string
 }
 
 export type Task = {
@@ -29,9 +29,9 @@ export type Task = {
   description: string
   isCompleted: boolean
   createdAt: string
-  deadline?: string
-  updatedAt?: string
-  completedAt?: string
+  deadline: string
+  updatedAt: string
+  completedAt: string
   involved: InvolvedUser[]
 }
 

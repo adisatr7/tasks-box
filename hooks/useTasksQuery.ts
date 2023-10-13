@@ -44,6 +44,8 @@ export default function useTaskQuery() {
 
       return tasks
     },
-    retry: 3
+    retry: 3,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   })
 }

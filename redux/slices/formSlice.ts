@@ -6,7 +6,6 @@ import { Task } from "../../types"
  * State dari form
  */
 type FormState = {
-  mode: "create" | "edit"
   selectedTask: Task | null
 }
 
@@ -14,7 +13,6 @@ type FormState = {
  * State awal dari form
  */
 const initialState: FormState = {
-  mode: "create",
   selectedTask: null
 }
 
@@ -25,15 +23,6 @@ export const formSlice = createSlice({
   name: "form",
   initialState,
   reducers: {
-    /**
-     * Mengatur mode form apakah membuat data baru atau mengedit data
-     *
-     * @param action Payload action yang berisi mode form
-     */
-    setFormMode: (state, action: PayloadAction<"create" | "edit">) => {
-      state.mode = action.payload
-    },
-
     /**
      * Mengatur item yang akan diedit
      *
@@ -53,4 +42,4 @@ export const formSlice = createSlice({
 })
 
 export default formSlice.reducer
-export const { setFormMode, selectTask, clearSelection } = formSlice.actions
+export const { selectTask, clearSelection } = formSlice.actions
