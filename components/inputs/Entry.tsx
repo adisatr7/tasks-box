@@ -1,4 +1,4 @@
-import { Text, TextInput, TextInputProps, TouchableOpacity, View } from "react-native"
+import { Platform, Text, TextInput, TextInputProps, TouchableOpacity, View } from "react-native"
 import { twMerge } from "tailwind-merge"
 import { styles } from "../../styles"
 import { SvgIcon } from "../../types"
@@ -21,6 +21,7 @@ type Props = {
 export default function Entry(props: Props) {
 
   const [isHidden, setIsHidden] = useState<boolean>(true)
+  const [height, setHeight] = useState<number>(96)
 
   return (
     <>
@@ -30,20 +31,25 @@ export default function Entry(props: Props) {
       <BlurView
         tint="dark"
         intensity={10}
-        className={`w-full my-[4px] flex-row px-[8px] py-[4px] text-left text-white rounded-md items-center ${styles.glassInput}`}>
+        className={`w-full my-[4px] flex-row px-[8px] py-[4px] text-left text-white rounded-md ${styles.glassInput}`}>
         {props.icon && <props.icon height={24} width={24} />}
         <TextInput
           placeholder={props.placeholder}
           placeholderTextColor="#989898"
           value={props.value}
           onChangeText={props.setValue}
+          onContentSizeChange={(e) => {
+            setHeight(e.nativeEvent.contentSize.height + 20)
+          }}
           multiline={props.multiline ? true : false}
           numberOfLines={props.multiline ? 4 : 1}
+          textAlignVertical={props.multiline ? "top" : "auto"}
           keyboardType={props.type === "password" ? "default" : props.type}
           secureTextEntry={props.type === "password" && isHidden}
           className={`flex-1 ml-[6px] text-white
-          ${props.multiline ? "h-[96px]" : "h-[24px]"}
-        `} />
+            ${Platform.OS === "android" && props.multiline && "top-[8px]"}
+          `}
+          style={{ height: props.multiline ? Math.max(height, 96) : 24 }}/>
         {props.type === "password" && (
           <TouchableOpacity
             activeOpacity={0.5}
