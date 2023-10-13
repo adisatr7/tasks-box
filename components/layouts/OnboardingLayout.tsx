@@ -13,7 +13,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
       <View className={`absolute z-0 flex w-full h-full blur-lg ${styles.loginOverlay}`}/>
       <SafeAreaView
         style={{ top: StatusBar.currentHeight }}
-        className="z-10 flex flex-col h-screen m-[18px] items-center justify-center">
+        className="z-10 flex flex-col flex-1 m-[18px] justify-center">
         {children}
       </SafeAreaView>
     </ImageBackground>

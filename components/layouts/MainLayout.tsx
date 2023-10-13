@@ -14,7 +14,8 @@ export default function MainLayout({ children }: MainLayoutProps) {
     <ImageBackground
       source={image}
       blurRadius={5}
-      className="h-full -z-10">
+      resizeMode="cover"
+      className="top-0 h-full -z-10">
       <View className={`absolute z-0 flex w-full h-full blur-lg ${styles.mainOverlay}`}/>
       <SafeAreaView
         style={{ top: Status.currentHeight }}
