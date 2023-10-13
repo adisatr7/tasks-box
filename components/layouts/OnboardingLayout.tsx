@@ -9,7 +9,10 @@ type OnboardingLayoutProps = {
 
 export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
   return (
-    <ImageBackground source={image} blurRadius={4} className="h-full -z-10">
+    <ImageBackground
+      source={image}
+      blurRadius={4}
+      className="h-full -z-10">
       <View className={`absolute z-0 flex w-full h-full blur-lg ${styles.loginOverlay}`}/>
       <SafeAreaView
         style={{ top: StatusBar.currentHeight }}
