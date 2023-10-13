@@ -14,9 +14,9 @@ export default function LongButton({ label, icon: Icon, onClick, className }: Pr
     <TouchableOpacity
       activeOpacity={0.5}
       onPress={onClick}
-      className={`bg-primary py-[6px] my-[4px] rounded-[6px] ${className}`}>
+      className={`flex-row items-center justify-center bg-primary py-[6px] my-[4px] rounded-[6px] ${className}`}>
       {Icon && <Icon fill="white" />}
-      <Text className="flex-row w-full font-bold text-center text-white text-caption">
+      <Text className="flex-row font-bold mx-[8px] text-center text-white w-fit text-caption">
         {label}
       </Text>
     </TouchableOpacity>
