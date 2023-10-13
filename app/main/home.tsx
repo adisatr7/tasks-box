@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native"
-import CompletionIcon from "../../components/icons/CompletionIcon"
 import PlusIcon from "../../components/icons/PlusIcon"
 import MainLayout from "../../components/layouts/MainLayout"
 import { styles } from "../../styles"
@@ -8,6 +7,10 @@ import { Task } from "../../types"
 import { router } from "expo-router"
 import { useAppSelector } from "../../redux"
 import useTaskQuery from "../../hooks/useTasksQuery"
+import { useDispatch } from "react-redux"
+import TaskCard from "../../components/containers/TaskCard"
+import { removeCurrentUser } from "../../redux/slices/authSlice"
+import LogoutIcon from "../../components/icons/LogoutIcon"
 
 
 export default function HomeScreen() {
@@ -21,6 +24,11 @@ export default function HomeScreen() {
   const taskQuery = useTaskQuery()
 
   /**
+   * Hook untuk dispatch Redux state.
+   */
+  const dispatch = useDispatch()
+
+  /**
    * Hook untuk mengambil data user yang sedang login.
    */
   const currentUser = useAppSelector((state) => state.auth.currentUser)
@@ -31,7 +39,6 @@ export default function HomeScreen() {
   const tabs = [
     "Semua",
     "Prioritas",
-    "Selesai"
   ]
 
   useEffect(() => {
@@ -45,38 +52,21 @@ export default function HomeScreen() {
         case 1:
           setItemsToShow(taskQuery.data.filter(task => task.deadline))
           break
-        case 2:
-          setItemsToShow(taskQuery.data.filter(task => task.isCompleted))
-          break
       }
     }
-  }, [])
-
-  /**
-   * Menghitung jumlah user yang sudah menyelesaikan task
-   *
-   * @param task Array yang ingin dihitung
-   * @returns Jumlah task yang sudah diselesaikan oleh user
-   */
-  const countCompletedUsers = (task: Task): number => {
-    let count = 0
-    task.involved.forEach(user => {
-      if (user.isCompleted)
-        count++
-    })
-    return count
-  }
+  }, [taskQuery.status, selectedTabIndex])
 
 
   return (
     <MainLayout>
       {/* User Profile Header */}
-      <TouchableOpacity
-        activeOpacity={0.5}
+      <View
+        // activeOpacity={0.5}
         className="flex-row items-center w-fit">
         {/* Profile Picture */}
         <View className="rounded-full bg-gray-300 w-[48px] h-[48px] mr-[12px]">
           <Image
+            source={{ uri: currentUser.imageUrl }}
             style={{
               width: "100%",
               height: "100%",
@@ -84,7 +74,6 @@ export default function HomeScreen() {
               minHeight: 48,
               minWidth: 48
             }}
-            source={{ uri: currentUser.imageUrl }}
           />
         </View>
 
@@ -97,7 +86,19 @@ export default function HomeScreen() {
             {`${currentUser.firstName} ${currentUser.lastName}`}
           </Text>
         </View>
-      </TouchableOpacity>
+
+        <View className="flex-1" />
+
+        {/* Tombol logout */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            dispatch(removeCurrentUser())
+            router.replace("/onboarding/login")
+          }}>
+          <LogoutIcon fill="#FF352B" />
+        </TouchableOpacity>
+      </View>
 
       {/* Page Title Label */}
       <Text className="text-white text-heading-1">Daftar Task Anda</Text>
@@ -131,99 +132,27 @@ export default function HomeScreen() {
       <ScrollView>
         {itemsToShow.length > 0 &&
           itemsToShow.map((task, index) => (
-            <TouchableOpacity
-              key={index}
-              activeOpacity={0.9}
-              onPress={() => {
-                // TODO: Implement!
-              }}
-              className={`p-[10px] flex flex-col w-full h-fit rounded-md ${styles.glass} ${styles.glassOutline}`}>
-              <View className="flex-row justify-between w-full">
-                {/* Task title */}
-                <Text className="text-white text-heading-2 line-clamp-1">
-                  {task.title}
-                </Text>
-
-                {/* Pics of involved users */}
-                <View className="flex-row items-center gap-x-[8px]">
-                  {task.involved.slice(0, 3).map((user, index) => (
-                    <View
-                      key={index}
-                      className="rounded-full bg-gray-300 w-[24px] h-[24px]">
-                      <Image
-                        source={{ uri: user.imageUrl }}
-                        className="w-full h-full"
-                      />
-                    </View>
-                  ))}
-                </View>
-              </View>
-
-              {/* 2nd row */}
-              <View className="flex-row mt-[4px] items-end">
-                {/* Created/edited at */}
-                <View className="flex-col">
-                  <Text className="text-bright-gray text-caption">
-                    {task.updatedAt ? "Terakhir diubah:" : "Dibuat pada:"}
-                  </Text>
-                  <Text className="text-white text-body w-fit">
-                    {task.updatedAt
-                      ? new Date(task.updatedAt).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric"
-                        })
-                      : new Date(task.createdAt).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric"
-                        })}
-                  </Text>
-                </View>
-
-                {/* Deadline */}
-                <View className="flex-col mx-[24px] flex-1">
-                  <Text className="text-bright-gray text-caption">
-                    Deadline:
-                  </Text>
-                  <Text className="text-white text-body">
-                    {task.deadline
-                      ? new Date(task.deadline).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric"
-                        })
-                      : "-"}
-                  </Text>
-                </View>
-
-                {/* Completion */}
-                <View className="flex-row items-center justify-end">
-                  <CompletionIcon />
-                  <Text className="text-white text-body ml-[6px]">
-                    {countCompletedUsers(task)}/{task.involved.length}
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
+            <>
+              <TaskCard task={task} key={index} />
+              <View className="h-[8px]"/>
+            </>
           ))}
+        {/* If task is empty */}
+        {itemsToShow.length === 0 && (
+          <View
+            className={`flex items-center justify-center h-fit py-[18px] rounded-lg ${styles.glass} ${styles.glassOutline}`}>
+            <Text className="text-center text-white text-body">
+              Tidak ada task.
+            </Text>
+          </View>
+        )}
       </ScrollView>
-
-      {/* If task is empty */}
-      {itemsToShow.length === 0 && (
-        <View
-          className={`flex items-center justify-center h-fit py-[18px] rounded-md ${styles.glass} ${styles.glassOutline}`}>
-          <Text className="text-center text-white text-body">
-            Tidak ada task.
-          </Text>
-        </View>
-      )}
 
       {/* Floating action button */}
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => {
-          router.push(`/main/form?`)
+          router.push(`/main/form`)
         }}
         className="rounded-full bg-primary w-[52px] h-[52px] justify-center items-center absolute bottom-1 right-0 shadow-md">
         <PlusIcon fill="white" />

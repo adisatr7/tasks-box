@@ -23,15 +23,15 @@ export type InvolvedUser = User & {
 }
 
 export type Task = {
-  id: string
+  id?: string
   title: string
   madeBy: User
   description: string
   isCompleted: boolean
   createdAt: string
-  deadline?: string
-  updatedAt?: string
-  completedAt?: string
+  deadline: string
+  updatedAt: string
+  completedAt: string
   involved: InvolvedUser[]
 }
 

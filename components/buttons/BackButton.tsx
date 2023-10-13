@@ -6,9 +6,10 @@ import { router } from "expo-router"
 type Props = {
   onClick?: () => void
   className?: string
+  absolute?: boolean
 }
 
-export default function BackButton({ onClick, className }: Props) {
+export default function BackButton({ onClick, className, absolute }: Props) {
   /**
    * Handler untuk tombol Back.
    */
@@ -29,7 +30,7 @@ export default function BackButton({ onClick, className }: Props) {
     <TouchableOpacity
       activeOpacity={0.5}
       onPress={handleClick}
-      className={`flex-row justify-center items-center py-[6px] pb-[6px] rounded-full absolute z-20 ${className}`}>
+      className={`flex-row justify-center items-center py-[6px] pb-[6px] rounded-full ${absolute && "absolute"} z-20 ${className}`}>
       <LeftArrowIcon width={32} height={32} fill="white"/>
     </TouchableOpacity>
   )

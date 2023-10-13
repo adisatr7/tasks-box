@@ -1,9 +1,9 @@
-import { UserCredential, createUserWithEmailAndPassword } from "firebase/auth"
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db, storage } from "../firebase/index"
 import { useMutation } from "react-query"
 import { FirebaseError } from "firebase/app"
 import { Alert } from "react-native"
-import { addDoc, collection, doc, setDoc } from "firebase/firestore"
+import { collection, doc, setDoc } from "firebase/firestore"
 import { User } from "../types"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
 
@@ -13,30 +13,26 @@ export default function useRegister() {
 
   return useMutation<User, Error, { userData: User; passwordInput: string }>({
     mutationFn: async ({ userData, passwordInput }) => {
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, userData.email, passwordInput)
+      const userCredential = await createUserWithEmailAndPassword(auth, userData.email, passwordInput)
 
-        userData.id = userCredential.user.uid
-        userData.imageUrl = await uploadImageToCloud(userData.imageUrl)
-          .catch(() => "-1")
+      userData.id = userCredential.user.uid
+      userData.imageUrl = await uploadImageToCloud(userData.imageUrl)
+        .catch(() => "-1")
 
-        await setDoc(doc(dbRef, userData.id), userData)
+      await setDoc(doc(dbRef, userData.id), userData)
 
-        const user: User = {
-          id: userCredential.user.uid,
-          email: userCredential.user.email,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          position: userData.position,
-          imageUrl: userData.imageUrl,
-          level: userData.level,
-          exp: userData.exp,
-        }
-
-        return Promise.resolve(user)
-      } catch (error) {
-        Promise.reject(new FirebaseError(error.code, error.message))
+      const user: User = {
+        id: userCredential.user.uid,
+        email: userCredential.user.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        position: userData.position,
+        imageUrl: userData.imageUrl,
+        level: userData.level,
+        exp: userData.exp,
       }
+
+      return Promise.resolve(user)
     },
     onError: (error: FirebaseError) => {
       if (error.message === "Firebase: Error (auth/invalid-email).") {
