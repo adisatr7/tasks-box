@@ -50,10 +50,19 @@ export default function LoginScreen() {
     .then((data) => {
       // Simpan data user ke Redux state
       const user: User = data
+
+      // Validasi user
+      if (!user.firstName || !user.email) {
+        Alert.alert("Error", "Terjadi kesalahan")
+        return
+      }
+
       dispatch(setCurrentUser(user))
 
       // Pindah ke halaman utama
-      router.push("/main/home")
+      setTimeout(() => {
+        router.push("/main/home")
+      }, 10)
     })
   }
 

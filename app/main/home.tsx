@@ -8,6 +8,7 @@ import { Task } from "../../types"
 import { router } from "expo-router"
 import { useAppSelector } from "../../redux"
 import useTaskQuery from "../../hooks/useTasksQuery"
+import { useDispatch } from "react-redux"
 
 
 export default function HomeScreen() {
@@ -19,6 +20,11 @@ export default function HomeScreen() {
    * Hook untuk mengambil data task.
    */
   const taskQuery = useTaskQuery()
+
+  /**
+   * Hook untuk dispatch Redux state.
+   */
+  const dispatch = useDispatch()
 
   /**
    * Hook untuk mengambil data user yang sedang login.
@@ -77,6 +83,7 @@ export default function HomeScreen() {
         {/* Profile Picture */}
         <View className="rounded-full bg-gray-300 w-[48px] h-[48px] mr-[12px]">
           <Image
+            source={{ uri: currentUser.imageUrl }}
             style={{
               width: "100%",
               height: "100%",
@@ -84,7 +91,6 @@ export default function HomeScreen() {
               minHeight: 48,
               minWidth: 48
             }}
-            source={{ uri: currentUser.imageUrl }}
           />
         </View>
 
@@ -151,7 +157,7 @@ export default function HomeScreen() {
                       key={index}
                       className="rounded-full bg-gray-300 w-[24px] h-[24px]">
                       <Image
-                        source={{ uri: user.imageUrl }}
+                        source={{ uri: user.imageUrl ?? "" }}
                         className="w-full h-full"
                       />
                     </View>
@@ -223,7 +229,8 @@ export default function HomeScreen() {
       <TouchableOpacity
         activeOpacity={0.7}
         onPress={() => {
-          router.push(`/main/form?`)
+
+          router.push(`/main/form`)
         }}
         className="rounded-full bg-primary w-[52px] h-[52px] justify-center items-center absolute bottom-1 right-0 shadow-md">
         <PlusIcon fill="white" />
