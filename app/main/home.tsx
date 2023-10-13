@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux"
 import TaskCard from "../../components/containers/TaskCard"
 import { removeCurrentUser } from "../../redux/slices/authSlice"
 import LogoutIcon from "../../components/icons/LogoutIcon"
+import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
 
 
 export default function HomeScreen() {
@@ -39,22 +40,29 @@ export default function HomeScreen() {
   const tabs = [
     "Semua",
     "Prioritas",
+    "Selesai"
   ]
 
+
   useEffect(() => {
+    taskQuery.refetch()
+
     // Jika data task sudah di-fetch
     if (taskQuery.isSuccess) {
       // Filter task yang sesuai dengan tab yang dipilih
       switch (selectedTabIndex) {
         case 0:
-          setItemsToShow(taskQuery.data.filter(task => !task.isCompleted))
+          setItemsToShow(taskQuery.data.filter(task => !checkIfTaskIsCompleted(task)))
           break
         case 1:
-          setItemsToShow(taskQuery.data.filter(task => task.deadline))
+          setItemsToShow(taskQuery.data.filter((task) => !checkIfTaskIsCompleted(task) && task.deadline))
+          break
+        case 2:
+          setItemsToShow(taskQuery.data.filter(task => checkIfTaskIsCompleted(task)))
           break
       }
     }
-  }, [taskQuery.status, selectedTabIndex])
+  }, [taskQuery.status, taskQuery.data, selectedTabIndex])
 
 
   return (
@@ -111,31 +119,28 @@ export default function HomeScreen() {
             activeOpacity={0.5}
             onPress={() => setSelectedTabIndex(index)}
             className={`flex-col items-center justify-center w-fit h-fit`}>
-            <Text
-              className={`text-white mr-[18px]
-              ${
-                selectedTabIndex === index
+            <Text className={`text-white mr-[18px]
+              ${selectedTabIndex === index
                   ? "font-bold text-body"
                   : "text-caption"
               }`}>
               {tabLabel}
             </Text>
             {selectedTabIndex === index && (
-              <View className="w-[12px] h-[3px] rounded-full bg-bright-gray mr-[18px]" />
+              <View className="w-[12px] h-[3px] rounded-full bg-bright-gray mr-[18px]"/>
             )}
           </TouchableOpacity>
         ))}
       </View>
-      <View className="w-full h-[1px] rounded-full bg-bright-gray -top-[12px]" />
+      <View className="w-full h-[1px] rounded-full bg-bright-gray -top-[12px]"/>
 
       {/* Tasks List */}
       <ScrollView>
         {itemsToShow.length > 0 &&
           itemsToShow.map((task, index) => (
-            <>
-              <TaskCard task={task} key={index} />
-              <View className="h-[8px]"/>
-            </>
+            <View key={index} className="pb-[8px]">
+              <TaskCard task={task}/>
+            </View>
           ))}
         {/* If task is empty */}
         {itemsToShow.length === 0 && (

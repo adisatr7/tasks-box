@@ -18,7 +18,7 @@ export default function FormScreen() {
   // const selectedTask = useAppSelector((state) => state.form.selectedTask)
 
   const [judulInput, setJudulInput] = useState<string>("")
-  const [hasDeadline, setHasDeadline] = useState<boolean>(true)
+  const [hasDeadline, setHasDeadline] = useState<boolean>(false)
   const [deadline, setDeadline] = useState<Date>(new Date())
   const [descInput, setDescInput] = useState<string>("")
 
@@ -56,7 +56,7 @@ export default function FormScreen() {
         description: descInput,
         isCompleted: false,
         createdAt: new Date().toISOString(),
-        deadline: hasDeadline && deadline.toISOString(),
+        deadline: hasDeadline ? deadline.toISOString() : "",
         completedAt: "",
         updatedAt: "",
         involved: [
@@ -71,7 +71,7 @@ export default function FormScreen() {
     // Jika berhasil, kembali ke halaman sebelumnya
     .then(() => {
       Alert.alert("Berhasil", "Task berhasil dibuat!")
-      queryClient.invalidateQueries("tasks")
+      queryClient.invalidateQueries(["tasks"])
       setTimeout(() => {
         router.back()
       }, 100)

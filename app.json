@@ -11,15 +11,22 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.raddox7.tasksbox"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/icons/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.raddox7.tasksbox"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -31,6 +38,11 @@
           "photosPermission": "Aplikasi ini memerlukan akses ke galeri untuk mengunggah foto profil Anda."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "73e1e785-1cc9-4739-87a4-2a281d8a9380"
+      }
+    }
   }
 }
