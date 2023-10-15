@@ -1,6 +1,7 @@
 import { ImageBackground, SafeAreaView, StatusBar, View } from "react-native"
 import { styles } from "../../styles"
 import image from "../../assets/backgrounds/login.jpg"
+import LoadingOverlay from "./LoadingOverlay"
 
 
 type OnboardingLayoutProps = {
@@ -19,6 +20,7 @@ export default function OnboardingLayout({ children }: OnboardingLayoutProps) {
         className="z-10 flex flex-col flex-1 m-[18px] justify-center">
         {children}
       </SafeAreaView>
+      <LoadingOverlay/>
     </ImageBackground>
   )
 }

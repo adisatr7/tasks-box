@@ -1,5 +1,5 @@
 import MainLayout from "../../components/layouts/MainLayout"
-import { useAppSelector } from "../../redux"
+import { useAppDispatch, useAppSelector } from "../../redux"
 import Header from "../../components/containers/Header"
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native"
 import { styles } from "../../styles"
@@ -12,6 +12,7 @@ import { FirebaseError } from "firebase/app"
 import { InvolvedUser, Task } from "../../types"
 import { useQueryClient } from "react-query"
 import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
+import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 
 export default function FormScreen() {
   /**
@@ -23,6 +24,11 @@ export default function FormScreen() {
    * Hook untuk mengambil data user yang sedang login.
    */
   const currentUser = useAppSelector((state) => state.auth.currentUser)
+
+  /**
+   * Hook untuk dispatch Redux state.
+   */
+  const dispatch = useAppDispatch()
 
   /**
    * Hook untuk mengambil data query client.
@@ -69,6 +75,8 @@ export default function FormScreen() {
    * Fungsi untuk melibatkan user ke dalam task.
    */
   const joinTask = () => {
+    dispatch(startLoading)
+
     const task: Task = { ...selectedTask }
     task.involved.push({
       ...currentUser,
@@ -85,6 +93,9 @@ export default function FormScreen() {
       })
       .catch((error: FirebaseError) => {
         Alert.alert("Gagal", error.message)
+      })
+      .finally(() => {
+        dispatch(endLoading())
       })
   }
 
@@ -113,6 +124,8 @@ export default function FormScreen() {
       )
     }
 
+    dispatch(startLoading())
+
     const task: Task = { ...selectedTask }
     const updatedInvolved = task.involved.filter((user) => {
       return user.id !== currentUser.id
@@ -128,6 +141,9 @@ export default function FormScreen() {
       })
       .catch((error: FirebaseError) => {
         Alert.alert("Gagal", error.message)
+      })
+      .finally(() => {
+        dispatch(endLoading())
       })
   }
 
@@ -149,13 +165,14 @@ export default function FormScreen() {
    * Fungsi untuk menandai task sebagai selesai.
    */
   const setTaskToFinished = () => {
+    dispatch(startLoading())
+
     // Cari index user yang sedang login.
     const userIndex = selectedTask.involved.findIndex((user) => {
       return user.id === currentUser.id
     })
 
     // Atur task menjadi selesai untuk user yang sedang login.
-
     let involvedUsers: InvolvedUser[] = []
     selectedTask.involved.forEach((user) => {
       involvedUsers.push({
@@ -187,9 +204,6 @@ export default function FormScreen() {
     console.log("involvedUsers", involvedUsers)
     console.log("Task's involved", taskToBeUpdated.involved)
 
-    // console.log("Task", taskToBeUpdated)
-    // console.log("Involved", taskToBeUpdated.involved)
-
     // Kirim data task yang sudah diubah ke server.
     updateTask
       .mutateAsync(taskToBeUpdated)
@@ -200,6 +214,9 @@ export default function FormScreen() {
       })
       .catch((error: FirebaseError) => {
         Alert.alert("Gagal", error.message)
+      })
+      .finally(() => {
+        dispatch(endLoading())
       })
   }
 

@@ -1,14 +1,16 @@
+import { router } from "expo-router"
+import AnimatedLottieView from "lottie-react-native"
 import { useEffect, useState } from "react"
 import { Image, ScrollView, Text, TouchableOpacity, View } from "react-native"
+import { useDispatch } from "react-redux"
+import loadingAnimation from "../../assets/animations/loading.json"
+import TaskCard from "../../components/containers/TaskCard"
 import PlusIcon from "../../components/icons/PlusIcon"
 import MainLayout from "../../components/layouts/MainLayout"
+import useTaskQuery from "../../hooks/useTasksQuery"
+import { useAppSelector } from "../../redux"
 import { styles } from "../../styles"
 import { Task } from "../../types"
-import { router } from "expo-router"
-import { useAppSelector } from "../../redux"
-import useTaskQuery from "../../hooks/useTasksQuery"
-import { useDispatch } from "react-redux"
-import TaskCard from "../../components/containers/TaskCard"
 import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
 
 
@@ -97,16 +99,6 @@ export default function HomeScreen() {
         </View>
 
         <View className="flex-1" />
-
-        {/* Tombol logout */}
-        {/* <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={() => {
-            dispatch(removeCurrentUser())
-            router.replace("/onboarding/login")
-          }}>
-          <LogoutIcon fill="#FF352B" />
-        </TouchableOpacity> */}
       </TouchableOpacity>
 
       {/* Page Title Label */}
@@ -120,38 +112,48 @@ export default function HomeScreen() {
             activeOpacity={0.5}
             onPress={() => setSelectedTabIndex(index)}
             className={`flex-col items-center justify-center w-fit h-fit`}>
-            <Text className={`text-white mr-[18px]
-              ${selectedTabIndex === index
+            <Text
+              className={`text-white mr-[18px]
+              ${
+                selectedTabIndex === index
                   ? "font-bold text-body"
                   : "text-caption"
               }`}>
               {tabLabel}
             </Text>
             {selectedTabIndex === index && (
-              <View className="w-[12px] h-[3px] rounded-full bg-bright-gray mr-[18px]"/>
+              <View className="w-[12px] h-[3px] rounded-full bg-bright-gray mr-[18px]" />
             )}
           </TouchableOpacity>
         ))}
       </View>
-      <View className="w-full h-[1px] rounded-full bg-bright-gray -top-[12px]"/>
+      <View className="w-full h-[1px] rounded-full bg-bright-gray -top-[12px]" />
 
       {/* Tasks List */}
       <ScrollView>
-        {itemsToShow.length > 0 &&
-          itemsToShow.map((task, index) => (
-            <View key={index} className="pb-[8px]">
-              <TaskCard task={task}/>
-            </View>
-          ))}
-        {/* If task is empty */}
-        {itemsToShow.length === 0 && (
-          <View
-            className={`flex items-center justify-center h-fit py-[18px] rounded-lg ${styles.glass} ${styles.glassOutline}`}>
-            <Text className="text-center text-white text-body">
-              Tidak ada task.
-            </Text>
+        {taskQuery.isLoading ?
+          <View className="items-center justify-center flex-1">
+            <AnimatedLottieView
+              autoPlay
+              source={loadingAnimation}
+              style={{
+                width: 100,
+                height: 100
+              }}
+            />
           </View>
-        )}
+          : itemsToShow.length > 0
+          ? itemsToShow.map((task, index) => (
+            <View key={index} className="pb-[8px]">
+              <TaskCard task={task} />
+            </View>
+          ))
+          : <View className={`flex items-center justify-center h-fit py-[18px] rounded-lg ${styles.glass} ${styles.glassOutline}`}>
+              <Text className="text-center text-white text-body">
+                Tidak ada task.
+              </Text>
+            </View>
+        }
       </ScrollView>
 
       {/* Floating action button */}

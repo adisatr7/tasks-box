@@ -1,5 +1,5 @@
 import MainLayout from "../../components/layouts/MainLayout"
-import { useAppSelector } from "../../redux"
+import { useAppDispatch, useAppSelector } from "../../redux"
 import Header from "../../components/containers/Header"
 import { Alert, Text, View } from "react-native"
 import Entry from "../../components/inputs/Entry"
@@ -11,12 +11,11 @@ import useCreateTask from "../../hooks/useCreateTask"
 import { router } from "expo-router"
 import Switch from "../../components/inputs/Switch"
 import { useQueryClient } from "react-query"
+import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
+import LoadingOverlay from "../../components/layouts/LoadingOverlay"
 
 
 export default function FormScreen() {
-  // const mode = useAppSelector((state) => state.form.mode)
-  // const selectedTask = useAppSelector((state) => state.form.selectedTask)
-
   const [judulInput, setJudulInput] = useState<string>("")
   const [hasDeadline, setHasDeadline] = useState<boolean>(false)
   const [deadline, setDeadline] = useState<Date>(new Date())
@@ -36,58 +35,69 @@ export default function FormScreen() {
    * Hook untuk mengambil data user yang sedang login.
    */
   const currentUser = useAppSelector((state) => state.auth.currentUser)
+  // const mode = useAppSelector((state) => state.form.mode)
+  // const selectedTask = useAppSelector((state) => state.form.selectedTask)
+
+  /**
+   * Hook untuk dispatch Redux state.
+   */
+  const dispatch = useAppDispatch()
 
   /**
    * Fungsi untuk menghandle submit form.
    */
   const handleSubmit = () => {
-
     // Validasi input
     if (!judulInput) {
       alert("Judul task tidak boleh kosong!")
       return
     }
 
+    dispatch(startLoading())
+
     // Lakukan request ke API untuk membuat task baru
-    createTask.mutateAsync({
-      taskData: {
-        title: judulInput,
-        madeBy: currentUser,
-        description: descInput,
-        isCompleted: false,
-        createdAt: new Date().toISOString(),
-        deadline: hasDeadline ? deadline.toISOString() : "",
-        completedAt: "",
-        updatedAt: "",
-        involved: [
-          {
-            ...currentUser,
-            isCompleted: false,
-            completedAt: ""
-          }
-        ]
-    }})
+    createTask
+      .mutateAsync({
+        taskData: {
+          title: judulInput,
+          madeBy: currentUser,
+          description: descInput,
+          createdAt: new Date().toISOString(),
+          deadline: hasDeadline ? deadline.toISOString() : "",
+          completedAt: "",
+          updatedAt: "",
+          involved: [
+            {
+              ...currentUser,
+              isCompleted: false,
+              completedAt: ""
+            }
+          ]
+        }
+      })
 
-    // Jika berhasil, kembali ke halaman sebelumnya
-    .then(() => {
-      Alert.alert("Berhasil", "Task berhasil dibuat!")
-      queryClient.invalidateQueries(["tasks"])
-      setTimeout(() => {
-        router.back()
-      }, 100)
-    })
+      // Jika berhasil, kembali ke halaman sebelumnya
+      .then(() => {
+        Alert.alert("Berhasil", "Task berhasil dibuat!")
+        queryClient.invalidateQueries(["tasks"])
+        setTimeout(() => {
+          router.back()
+        }, 100)
+      })
 
-    // Jika gagal, tampilkan pesan error
-    .catch((error) => {
-      Alert.alert("Gagal", error.message)
-    })
+      // Jika gagal, tampilkan pesan error
+      .catch((error) => {
+        Alert.alert("Gagal", error.message)
+      })
+
+      .finally(() => {
+        dispatch(endLoading())
+      })
   }
 
   return (
     <MainLayout>
-      <Header
-        position="left"
-        title="Buat Task Baru"/>
+      <Header position="left" title="Buat Task Baru" />
 
       {/* Forms */}
       <View className="flex-col gap-y-[8px] h-fit">
@@ -95,39 +105,42 @@ export default function FormScreen() {
           label="Judul Task"
           placeholder="Masukkan judul task"
           value={judulInput}
-          setValue={setJudulInput}/>
-        <View/>
+          setValue={setJudulInput}
+        />
+        <View />
 
         <Switch
           value={hasDeadline}
           setValue={setHasDeadline}
-          label="Deadline"/>
-        <View/>
+          label="Deadline"
+        />
+        <View />
 
-        {hasDeadline
-          ? <TimePicker
-              value={deadline}
-              setValue={setDeadline}/>
-          : <View className="w-full h-[1px] rounded-full bg-bright-gray"/>
-        }
-        <View/>
+        {hasDeadline ? (
+          <TimePicker value={deadline} setValue={setDeadline} />
+        ) : (
+          <View className="w-full h-[1px] rounded-full bg-bright-gray" />
+        )}
+        <View />
 
         <Entry
           multiline
           label="Deskripsi"
           placeholder="Tuliskan deskripsi task"
           value={descInput}
-          setValue={setDescInput}/>
-        <View/>
+          setValue={setDescInput}
+        />
+        <View />
       </View>
 
-      <View className="flex-1"/>
+      <View className="flex-1" />
 
       {/* Tombol Submit */}
       <LongButton
         icon={AddTaskicon}
         onClick={handleSubmit}
-        label="Tambah Task"/>
+        label="Tambah Task"
+      />
     </MainLayout>
   )
 }

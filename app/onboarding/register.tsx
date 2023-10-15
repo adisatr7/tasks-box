@@ -14,8 +14,9 @@ import OnboardingLayout from "../../components/layouts/OnboardingLayout"
 import useRegister from "../../hooks/useRegister"
 import { useAppDispatch } from "../../redux"
 import { setCurrentUser } from "../../redux/slices/authSlice"
-import { styles } from "../../styles"
 import { User } from "../../types"
+import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
+import LoadingOverlay from "../../components/layouts/LoadingOverlay"
 
 
 export default function RegisterScreen() {
@@ -71,6 +72,8 @@ export default function RegisterScreen() {
       return
     }
 
+    dispatch(startLoading())
+
     // Lakukan mutasi register
     await register.mutateAsync({
       userData: getDataFromForm(),
@@ -85,6 +88,10 @@ export default function RegisterScreen() {
       setTimeout(() => {
         router.replace("/main/home")
       }, 300)
+    })
+
+    .finally(() => {
+      dispatch(endLoading())
     })
   }
 
@@ -155,6 +162,7 @@ export default function RegisterScreen() {
         <LongButton label="Daftar Sekarang" onClick={handleSubmit} />
 
       </GlassCard>
+      <LoadingOverlay/>
     </OnboardingLayout>
   )
 }

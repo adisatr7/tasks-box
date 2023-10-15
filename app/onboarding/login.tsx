@@ -11,6 +11,8 @@ import useLogin from "../../hooks/useLogin"
 import { useAppDispatch } from "../../redux"
 import { setCurrentUser } from "../../redux/slices/authSlice"
 import { User } from "../../types"
+import LoadingOverlay from "../../components/layouts/LoadingOverlay"
+import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 
 export default function LoginScreen() {
   const [emailInput, setEmailInput] = useState<string>("")
@@ -44,6 +46,8 @@ export default function LoginScreen() {
       return
     }
 
+    dispatch(startLoading())
+
     login.mutateAsync({ email: emailInput, password: rawPasswordInput })
 
     // Jika login sukses
@@ -64,6 +68,11 @@ export default function LoginScreen() {
         router.replace("/main/home")
       }, 10)
     })
+
+    .finally(() => {
+      dispatch(endLoading())
+    })
+
   }
 
   return (
