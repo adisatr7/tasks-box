@@ -9,8 +9,6 @@ import { useAppSelector } from "../../redux"
 import useTaskQuery from "../../hooks/useTasksQuery"
 import { useDispatch } from "react-redux"
 import TaskCard from "../../components/containers/TaskCard"
-import { removeCurrentUser } from "../../redux/slices/authSlice"
-import LogoutIcon from "../../components/icons/LogoutIcon"
 import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
 
 
@@ -68,8 +66,11 @@ export default function HomeScreen() {
   return (
     <MainLayout>
       {/* User Profile Header */}
-      <View
-        // activeOpacity={0.5}
+      <TouchableOpacity
+        activeOpacity={0.5}
+        onPress={() => {
+          router.push(`/main/profile`)
+        }}
         className="flex-row items-center w-fit">
         {/* Profile Picture */}
         <View className="rounded-full bg-gray-300 w-[48px] h-[48px] mr-[12px]">
@@ -87,10 +88,10 @@ export default function HomeScreen() {
 
         {/* Greetings */}
         <View className="sticky flex-col w-fit">
-          <Text className="text-bright-gray text-caption w-fit">
+          <Text className="text-bright-gray text-body w-fit">
             Selamat datang,
           </Text>
-          <Text className="text-white text-body w-fit">
+          <Text className="text-white text-heading-2 w-fit">
             {`${currentUser.firstName} ${currentUser.lastName}`}
           </Text>
         </View>
@@ -98,15 +99,15 @@ export default function HomeScreen() {
         <View className="flex-1" />
 
         {/* Tombol logout */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => {
             dispatch(removeCurrentUser())
             router.replace("/onboarding/login")
           }}>
           <LogoutIcon fill="#FF352B" />
-        </TouchableOpacity>
-      </View>
+        </TouchableOpacity> */}
+      </TouchableOpacity>
 
       {/* Page Title Label */}
       <Text className="text-white text-heading-1">Daftar Task Anda</Text>
