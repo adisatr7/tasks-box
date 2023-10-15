@@ -64,7 +64,6 @@ export default function FormScreen() {
           description: descInput,
           createdAt: new Date().toISOString(),
           deadline: hasDeadline ? deadline.toISOString() : "",
-          completedAt: "",
           updatedAt: "",
           involved: [
             {

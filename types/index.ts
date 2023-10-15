@@ -30,7 +30,6 @@ export type Task = {
   createdAt: string
   deadline: string
   updatedAt: string
-  completedAt: string
   involved: InvolvedUser[]
 }
 

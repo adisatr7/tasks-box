@@ -1,4 +1,4 @@
-import { InvolvedUser, Task } from "../types"
+import { Task } from "../types";
 
 
 /**
@@ -8,10 +8,10 @@ import { InvolvedUser, Task } from "../types"
  * @returns true jika task sudah selesai, false jika belum
  */
 export default function checkIfTaskIsCompleted(task: Task): boolean {
-  task.involved.forEach((user: InvolvedUser) => {
-    if (!user.isCompleted) {
+  for (const user of task.involved) {
+    if (!user.isCompleted || !user.completedAt) {
       return false
     }
-  })
+  }
   return true
 }
