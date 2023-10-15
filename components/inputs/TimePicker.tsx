@@ -1,12 +1,10 @@
-import { Text, TextInput, TextInputProps, TouchableOpacity, View } from "react-native"
-import { twMerge } from "tailwind-merge"
+import { Text, TouchableOpacity } from "react-native";
 import { styles } from "../../styles"
 import { SvgIcon } from "../../types"
 import { BlurView } from "expo-blur"
 import { useState } from "react"
-import ClosedEyeIcon from "../icons/ClosedEyeIcon"
-import OpenedEyeIcon from "../icons/OpenedEyeIcon"
 import RNDateTimePicker from "@react-native-community/datetimepicker"
+import CalendarIcon from "../icons/CalendarIcon"
 
 
 type Props = {
@@ -46,7 +44,7 @@ export default function TimePicker(props: Props) {
           className={`w-full my-[4px] flex-row px-[8px] py-[4px] text-left text-white rounded-md items-center h-[32px] ${styles.glassInput}`}>
           {props.icon && <props.icon height={24} width={24} />}
 
-          <Text className="self-center text-white">
+          <Text className="self-center flex-1 text-white">
             {props.value.toLocaleDateString("id-ID", {
               day: "numeric",
               month: "long",
@@ -59,6 +57,7 @@ export default function TimePicker(props: Props) {
               dayPeriod: "short"
             })}
           </Text>
+          <CalendarIcon height={18} width={18} fill="white"/>
         </BlurView>
       </TouchableOpacity>
 

@@ -1,4 +1,4 @@
-import { Slot } from "expo-router"
+import { Stack } from "expo-router"
 import { View } from "react-native"
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Provider } from "react-redux";
@@ -14,9 +14,11 @@ export default function Layout() {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-        <View className="justify-center">
-          <Slot/>
-        </View>
+        <Stack screenOptions={{
+          headerShown: false,
+          animation: "slide_from_right",
+          animationTypeForReplace: "push",
+        }}/>
       </QueryClientProvider>
     </Provider>
   )
