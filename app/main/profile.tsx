@@ -28,9 +28,9 @@ export default function () {
    * Menghandle tombol logout.
    */
   const handleLogout = () => {
-    dispatch(removeCurrentUser())
+    router.replace("/onboarding/login")
     setTimeout(() => {
-      router.replace("/onboarding/login")
+      dispatch(removeCurrentUser())
     }, 10)
   }
 
@@ -68,7 +68,7 @@ export default function () {
         <View className="flex-1" />
 
       </SafeAreaView>
-      <View className={`${styles.glassOutline} absolute bottom-0 rounded-t-xl h-[65%] w-screen backdrop-filter bg-glass/80 backdrop-blur-lg blur-lg`}>
+      <View className={`${styles.glassOutline} absolute bottom-0 rounded-t-xl h-[65%] w-screen backdrop-filter bg-glass/80 backdrop-blur-lg blur-lg z-10`}>
 
         {/* Profile Section */}
         <View className={`${styles.glassOutline} absolute -top-[36px] self-center w-[90%] rounded-xl h-[20%] backdrop-filter bg-glass/90 backdrop-blur-lg blur-lg items-center`}>
