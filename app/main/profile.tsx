@@ -3,7 +3,6 @@ import Header from "../../components/containers/Header"
 import { styles } from "../../styles"
 import { StatusBar as Status } from "react-native"
 import image from "../../assets/backgrounds/main.jpg"
-import { BlurView } from "expo-blur"
 import { useAppDispatch, useAppSelector } from "../../redux"
 import ProfileButton from "../../components/buttons/ProfileButton"
 import LogoutButton from "../../components/buttons/LogoutButton"
@@ -28,9 +27,10 @@ export default function () {
    * Menghandle tombol logout.
    */
   const handleLogout = () => {
-    dispatch(removeCurrentUser())
+    router.back()
     setTimeout(() => {
       router.replace("/onboarding/login")
+      dispatch(removeCurrentUser())
     }, 10)
   }
 
@@ -68,10 +68,10 @@ export default function () {
         <View className="flex-1" />
 
       </SafeAreaView>
-      <View className={`${styles.glassOutline} absolute bottom-0 rounded-t-xl h-[65%] w-screen backdrop-filter bg-glass/80 backdrop-blur-lg blur-lg`}>
+      <View className={`${styles.glassOutline} absolute bottom-0 rounded-t-xl h-[65%] w-screen backdrop-filter bg-glass/80 backdrop-blur-lg blur-lg z-10`}>
 
         {/* Profile Section */}
-        <View className={`${styles.glassOutline} absolute -top-[36px] self-center w-[90%] rounded-xl h-[20%] backdrop-filter bg-glass/90 backdrop-blur-lg blur-lg items-center`}>
+        <View className={`${styles.glassOutline} absolute -top-[36px] self-center w-[90%] rounded-xl h-fit pb-[16px] backdrop-filter bg-glass/90 backdrop-blur-lg blur-lg items-center`}>
           <Image
             source={{ uri: currentUser.imageUrl }}
             style={{

@@ -1,5 +1,4 @@
 import { Stack } from "expo-router"
-import { View } from "react-native"
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Provider } from "react-redux";
 import { store } from "../redux"

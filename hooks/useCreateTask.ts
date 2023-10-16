@@ -10,8 +10,8 @@ export default function useCreateTask() {
   const ref = collection(db, "tasks")
 
   return useMutation({
-    mutationFn: async ({ taskData }: { taskData: Task }) => {
-      return await addDoc(ref, taskData)
+    mutationFn: async (task: Task) => {
+      return await addDoc(ref, task)
     },
     onError: (error: FirebaseError) => {
       Alert.alert("Terjadi error saat membuat task baru", error.message)

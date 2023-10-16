@@ -27,11 +27,9 @@ export type Task = {
   title: string
   madeBy: User
   description: string
-  // isCompleted: boolean
   createdAt: string
   deadline: string
   updatedAt: string
-  completedAt: string
   involved: InvolvedUser[]
 }
 

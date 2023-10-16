@@ -1,4 +1,4 @@
-import { TouchableOpacity } from "react-native"
+import { Keyboard, TouchableOpacity } from "react-native"
 import LeftArrowIcon from "../icons/LeftArrowIcon"
 import { router } from "expo-router"
 
@@ -14,6 +14,8 @@ export default function BackButton({ onClick, className, absolute }: Props) {
    * Handler untuk tombol Back.
    */
   const handleClick = () => {
+    Keyboard.dismiss()
+
     // Jika ada prop handler yang diberikan, jalankan.
     if (onClick) {
       onClick()

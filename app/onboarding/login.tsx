@@ -1,20 +1,31 @@
 import { router } from "expo-router"
-import { useState } from "react"
-import { Alert, Text, TouchableOpacity } from "react-native"
+import { useRef, useState } from "react"
+import { Alert, Text, TouchableOpacity } from "react-native";
 import GlassCard from "../../components/containers/GlassCard"
 import EmailIcon from "../../components/icons/EmailIcon"
 import LockIcon from "../../components/icons/LockIcon"
 import Entry from "../../components/inputs/Entry"
-import LongButton from "../../components/buttons/PrimaryButton"
+import PrimaryButton from "../../components/buttons/PrimaryButton"
 import OnboardingLayout from "../../components/layouts/OnboardingLayout"
 import useLogin from "../../hooks/useLogin"
 import { useAppDispatch } from "../../redux"
 import { setCurrentUser } from "../../redux/slices/authSlice"
 import { User } from "../../types"
+import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 
 export default function LoginScreen() {
   const [emailInput, setEmailInput] = useState<string>("")
   const [rawPasswordInput, setRawPasswordInput] = useState<string>("")
+
+  /**
+   * Ref untuk input password.
+   */
+  const passwordRef = useRef(null)
+
+  /**
+   * Ref untuk tombol submit.
+   */
+  const submitButtonRef = useRef(null)
 
   /**
    * Hook untuk login.
@@ -44,6 +55,8 @@ export default function LoginScreen() {
       return
     }
 
+    dispatch(startLoading())
+
     login.mutateAsync({ email: emailInput, password: rawPasswordInput })
 
     // Jika login sukses
@@ -64,6 +77,11 @@ export default function LoginScreen() {
         router.replace("/main/home")
       }, 10)
     })
+
+    .finally(() => {
+      dispatch(endLoading())
+    })
+
   }
 
   return (
@@ -76,18 +94,26 @@ export default function LoginScreen() {
 
         {/* Form */}
         <Entry
+          type="email-address"
           placeholder="Masukkan email"
+          // onSubmitEditing={() => {
+          //   setTimeout(() => {
+          //     passwordRef.current.focus()
+          //   }, 10)
+          // }}
+          returnKeyType="next"
           icon={EmailIcon}
           value={emailInput}
           setValue={setEmailInput}
-          type="email-address"
         />
         <Entry
+          type="password"
           placeholder="Masukkan kata sandi"
+          onSubmitEditing={() => handleLogin()}
+          // ref={passwordRef}
           icon={LockIcon}
           value={rawPasswordInput}
           setValue={setRawPasswordInput}
-          type="password"
         />
 
         {/* Register Button */}
@@ -98,8 +124,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         {/* Login Button */}
-        <LongButton label="Masuk" onClick={handleLogin} />
-
+        <PrimaryButton ref={submitButtonRef} label="Masuk" onClick={handleLogin} />
       </GlassCard>
     </OnboardingLayout>
   )
