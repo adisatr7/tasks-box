@@ -3,7 +3,6 @@ import Header from "../../components/containers/Header"
 import { styles } from "../../styles"
 import { StatusBar as Status } from "react-native"
 import image from "../../assets/backgrounds/main.jpg"
-import { BlurView } from "expo-blur"
 import { useAppDispatch, useAppSelector } from "../../redux"
 import ProfileButton from "../../components/buttons/ProfileButton"
 import LogoutButton from "../../components/buttons/LogoutButton"
@@ -28,8 +27,9 @@ export default function () {
    * Menghandle tombol logout.
    */
   const handleLogout = () => {
-    router.replace("/onboarding/login")
+    router.back()
     setTimeout(() => {
+      router.replace("/onboarding/login")
       dispatch(removeCurrentUser())
     }, 10)
   }

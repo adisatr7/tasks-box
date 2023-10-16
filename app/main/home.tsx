@@ -34,6 +34,12 @@ export default function HomeScreen() {
    */
   const currentUser = useAppSelector((state) => state.auth.currentUser)
 
+  useEffect(() => {
+    if (!currentUser) {
+      router.replace("/onboarding/login")
+    }
+  }, [])
+
   /**
    * Daftar tab yang ada.
    */
@@ -90,7 +96,7 @@ export default function HomeScreen() {
         {/* Profile Picture */}
         <View className="rounded-full bg-gray-300 w-[48px] h-[48px] mr-[12px]">
           <Image
-            source={{ uri: currentUser.imageUrl }}
+            source={{ uri: currentUser ? currentUser.imageUrl : "-1" }}
             style={{
               width: "100%",
               height: "100%",
@@ -107,7 +113,7 @@ export default function HomeScreen() {
             Selamat datang,
           </Text>
           <Text className="text-white text-heading-2 w-fit">
-            {`${currentUser.firstName} ${currentUser.lastName}`}
+            {currentUser && `${currentUser.firstName} ${currentUser.lastName}`}
           </Text>
         </View>
 
