@@ -1,17 +1,16 @@
 import { router } from "expo-router"
 import { useState } from "react"
-import { Alert, Text, TouchableOpacity } from "react-native"
+import { Alert, Text, TouchableOpacity } from "react-native";
 import GlassCard from "../../components/containers/GlassCard"
 import EmailIcon from "../../components/icons/EmailIcon"
 import LockIcon from "../../components/icons/LockIcon"
 import Entry from "../../components/inputs/Entry"
-import LongButton from "../../components/buttons/PrimaryButton"
+import PrimaryButton from "../../components/buttons/PrimaryButton"
 import OnboardingLayout from "../../components/layouts/OnboardingLayout"
 import useLogin from "../../hooks/useLogin"
 import { useAppDispatch } from "../../redux"
 import { setCurrentUser } from "../../redux/slices/authSlice"
 import { User } from "../../types"
-import LoadingOverlay from "../../components/layouts/LoadingOverlay"
 import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 
 export default function LoginScreen() {
@@ -107,8 +106,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         {/* Login Button */}
-        <LongButton label="Masuk" onClick={handleLogin} />
-
+        <PrimaryButton label="Masuk" onClick={handleLogin} />
       </GlassCard>
     </OnboardingLayout>
   )

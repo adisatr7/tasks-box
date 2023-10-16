@@ -2,7 +2,7 @@ import { router } from "expo-router"
 import { useState } from "react"
 import { Alert, Text, View } from "react-native"
 import BackButton from "../../components/buttons/BackButton"
-import LongButton from "../../components/buttons/PrimaryButton"
+import PrimaryButton from "../../components/buttons/PrimaryButton"
 import GlassCard from "../../components/containers/GlassCard"
 import BriefcaseIcon from "../../components/icons/BriefcaseIcon"
 import EmailIcon from "../../components/icons/EmailIcon"
@@ -109,7 +109,10 @@ export default function RegisterScreen() {
 
         {/* Upload picture */}
         <View className="flex-col items-center justify-center w-full h-fit pb-[8px]">
-          <ImageSelector imageUrl={imageUrlInput} setImageUrl={setImageUrlInput}/>
+          <ImageSelector
+            imageUrl={imageUrlInput}
+            setImageUrl={setImageUrlInput}
+          />
           <Text className="text-bright-gray mt-[4px]">Unggah gambar</Text>
         </View>
 
@@ -159,10 +162,9 @@ export default function RegisterScreen() {
         <View className="h-[1px]" />
 
         {/* Register button */}
-        <LongButton label="Daftar Sekarang" onClick={handleSubmit} />
-
+        <PrimaryButton label="Daftar Sekarang" onClick={handleSubmit} />
       </GlassCard>
-      <LoadingOverlay/>
+      <LoadingOverlay />
     </OnboardingLayout>
   )
 }
