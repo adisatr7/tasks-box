@@ -3,9 +3,9 @@ import { useAppDispatch, useAppSelector } from "../../redux"
 import Header from "../../components/containers/Header"
 import { Alert, Text, View } from "react-native"
 import Entry from "../../components/inputs/Entry"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import TimePicker from "../../components/inputs/TimePicker"
-import LongButton from "../../components/buttons/PrimaryButton"
+import PrimaryButton from "../../components/buttons/PrimaryButton"
 import AddTaskicon from "../../components/icons/AddTaskicon"
 import useCreateTask from "../../hooks/useCreateTask"
 import { router } from "expo-router"
@@ -13,7 +13,7 @@ import Switch from "../../components/inputs/Switch"
 import { useQueryClient } from "react-query"
 import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 import LoadingOverlay from "../../components/layouts/LoadingOverlay"
-
+import useUpdateTask from "../../hooks/useUpdateTask"
 
 export default function FormScreen() {
   const [judulInput, setJudulInput] = useState<string>("")
@@ -24,7 +24,12 @@ export default function FormScreen() {
   /**
    * Hook untuk membuat task baru.
    */
-  const createTask = useCreateTask()
+  const createTaskMutation = useCreateTask()
+
+  /**
+   * Hook untuk mengupdate task.
+   */
+  const updateTaskMutation = useUpdateTask()
 
   /**
    * Hook untuk mengakses query client.
@@ -35,13 +40,53 @@ export default function FormScreen() {
    * Hook untuk mengambil data user yang sedang login.
    */
   const currentUser = useAppSelector((state) => state.auth.currentUser)
-  // const mode = useAppSelector((state) => state.form.mode)
-  // const selectedTask = useAppSelector((state) => state.form.selectedTask)
+
+  /**
+   * Hook untuk mengambil data mode form.
+   */
+  const mode = useAppSelector((state) => state.form.mode)
+
+  /**
+   * Hook untuk mengambil data task yang sedang dipilih.
+   */
+  const selectedTask = useAppSelector((state) => state.form.selectedTask)
 
   /**
    * Hook untuk dispatch Redux state.
    */
   const dispatch = useAppDispatch()
+
+  // Jika mode form adalah edit, isi form dengan data task yang sedang dipilih
+  useEffect(() => {
+    dispatch(startLoading())
+    setJudulInput(selectedTask?.title || "")
+    setHasDeadline(!!selectedTask?.deadline)
+    setDeadline(new Date(selectedTask?.deadline || ""))
+    setDescInput(selectedTask?.description || "")
+    setTimeout(() => {
+      dispatch(endLoading())
+    }, 10)
+  }, [selectedTask])
+
+
+  const getInputData = () => {
+    return {
+      title: judulInput,
+      madeBy: currentUser,
+      description: descInput,
+      createdAt: new Date().toISOString(),
+      deadline: hasDeadline ? deadline.toISOString() : "",
+      updatedAt: "",
+      involved: [
+        {
+          ...currentUser,
+          isCompleted: false,
+          completedAt: ""
+        }
+      ]
+    }
+  }
+
 
   /**
    * Fungsi untuk menghandle submit form.
@@ -56,24 +101,11 @@ export default function FormScreen() {
     dispatch(startLoading())
 
     // Lakukan request ke API untuk membuat task baru
-    createTask
-      .mutateAsync({
-        taskData: {
-          title: judulInput,
-          madeBy: currentUser,
-          description: descInput,
-          createdAt: new Date().toISOString(),
-          deadline: hasDeadline ? deadline.toISOString() : "",
-          updatedAt: "",
-          involved: [
-            {
-              ...currentUser,
-              isCompleted: false,
-              completedAt: ""
-            }
-          ]
-        }
-      })
+    if (mode === "add")
+      createTaskMutation.mutateAsync(getInputData())
+
+    else
+      updateTaskMutation.mutateAsync(getInputData())
 
       // Jika berhasil, kembali ke halaman sebelumnya
       .then(() => {
@@ -93,6 +125,7 @@ export default function FormScreen() {
         dispatch(endLoading())
       })
   }
+
 
   return (
     <MainLayout>
@@ -135,7 +168,7 @@ export default function FormScreen() {
       <View className="flex-1" />
 
       {/* Tombol Submit */}
-      <LongButton
+      <PrimaryButton
         icon={AddTaskicon}
         onClick={handleSubmit}
         label="Tambah Task"

@@ -12,10 +12,10 @@ import { useAppSelector } from "../../redux"
 import { styles } from "../../styles"
 import { Task } from "../../types"
 import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
+import { clearSelection, setFormMode } from "../../redux/slices/formSlice"
 
 
 export default function HomeScreen() {
-
   const [selectedTabIndex, setSelectedTabIndex] = useState<number>(0)
   const [itemsToShow, setItemsToShow] = useState<Task[]>([])
 
@@ -37,12 +37,7 @@ export default function HomeScreen() {
   /**
    * Daftar tab yang ada.
    */
-  const tabs = [
-    "Semua",
-    "Prioritas",
-    "Selesai"
-  ]
-
+  const tabs = ["Semua", "Prioritas", "Selesai"]
 
   useEffect(() => {
     taskQuery.refetch()
@@ -52,18 +47,36 @@ export default function HomeScreen() {
       // Filter task yang sesuai dengan tab yang dipilih
       switch (selectedTabIndex) {
         case 0:
-          setItemsToShow(taskQuery.data.filter(task => !checkIfTaskIsCompleted(task)))
+          setItemsToShow(
+            taskQuery.data.filter((task) => !checkIfTaskIsCompleted(task))
+          )
           break
         case 1:
-          setItemsToShow(taskQuery.data.filter((task) => !checkIfTaskIsCompleted(task) && task.deadline))
+          setItemsToShow(
+            taskQuery.data.filter(
+              (task) => !checkIfTaskIsCompleted(task) && task.deadline
+            )
+          )
           break
         case 2:
-          setItemsToShow(taskQuery.data.filter(task => checkIfTaskIsCompleted(task)))
+          setItemsToShow(
+            taskQuery.data.filter((task) => checkIfTaskIsCompleted(task))
+          )
           break
       }
     }
   }, [taskQuery.status, taskQuery.data, selectedTabIndex])
 
+  /**
+   * Handler untuk tombol (+)
+   */
+  const handleCreateTask = () => {
+    dispatch(clearSelection())
+    dispatch(setFormMode("add"))
+    setTimeout(() => {
+      router.push(`/main/form`)
+    }, 10)
+  }
 
   return (
     <MainLayout>
@@ -131,7 +144,7 @@ export default function HomeScreen() {
 
       {/* Tasks List */}
       <ScrollView>
-        {taskQuery.isLoading ?
+        {taskQuery.isLoading ? (
           <View className="items-center justify-center flex-1">
             <AnimatedLottieView
               autoPlay
@@ -142,26 +155,26 @@ export default function HomeScreen() {
               }}
             />
           </View>
-          : itemsToShow.length > 0
-          ? itemsToShow.map((task, index) => (
+        ) : itemsToShow.length > 0 ? (
+          itemsToShow.map((task, index) => (
             <View key={index} className="pb-[8px]">
               <TaskCard task={task} />
             </View>
           ))
-          : <View className={`flex items-center justify-center h-fit py-[18px] rounded-lg ${styles.glass} ${styles.glassOutline}`}>
-              <Text className="text-center text-white text-body">
-                Tidak ada task.
-              </Text>
-            </View>
-        }
+        ) : (
+          <View
+            className={`flex items-center justify-center h-fit py-[18px] rounded-lg ${styles.glass} ${styles.glassOutline}`}>
+            <Text className="text-center text-white text-body">
+              Tidak ada task.
+            </Text>
+          </View>
+        )}
       </ScrollView>
 
       {/* Floating action button */}
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => {
-          router.push(`/main/form`)
-        }}
+        onPress={handleCreateTask}
         className="rounded-full bg-primary w-[52px] h-[52px] justify-center items-center absolute bottom-1 right-0 shadow-md">
         <PlusIcon fill="white" />
       </TouchableOpacity>

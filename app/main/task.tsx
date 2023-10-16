@@ -4,7 +4,7 @@ import Header from "../../components/containers/Header"
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native"
 import { styles } from "../../styles"
 import GlassCard from "../../components/containers/GlassCard"
-import LongButton from "../../components/buttons/PrimaryButton"
+import PrimaryButton from "../../components/buttons/PrimaryButton"
 import FinishTaskIcon from "../../components/icons/FinishTaskIcon"
 import useUpdateTask from "../../hooks/useUpdateTask"
 import { router } from "expo-router"
@@ -13,6 +13,8 @@ import { InvolvedUser, Task } from "../../types"
 import { useQueryClient } from "react-query"
 import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
 import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
+import SecondaryButton from "../../components/buttons/SecondaryButton"
+import EditTaskIcon from "../../components/icons/EditTaskIcon"
 
 export default function FormScreen() {
   /**
@@ -182,27 +184,10 @@ export default function FormScreen() {
       })
     })
 
-    // Cek jika semua orang yang terlibat sudah menyelesaikan task.
-    // let isTaskCompleted = true
-    // taskToBeUpdated.involved.forEach((user) => {
-    //   if (!user.isCompleted) {
-    //     isTaskCompleted = false
-    //   }
-    // })
-
-    // Jika semua orang sudah menyelesaikan task, atur task menjadi selesai.
-    // if (isTaskCompleted) {
-    //   taskToBeUpdated.isCompleted = true
-    //   taskToBeUpdated.completedAt = new Date().toISOString()
-    // }
-
     let taskToBeUpdated: Task = {
       ...selectedTask,
       involved: involvedUsers
     }
-
-    console.log("involvedUsers", involvedUsers)
-    console.log("Task's involved", taskToBeUpdated.involved)
 
     // Kirim data task yang sudah diubah ke server.
     updateTask
@@ -231,6 +216,15 @@ export default function FormScreen() {
 
     setTaskToFinished()
   }
+
+
+  /**
+   * Fungsi untuk mengedit task.
+   */
+  const handleEditTask = () => {
+
+  }
+
 
   return (
     <MainLayout>
@@ -264,7 +258,9 @@ export default function FormScreen() {
               {selectedTask.involved[0].id === currentUser.id && " (Saya)"}
             </Text>
             <Text className={whiteTextStyle}>
-              {checkIfTaskIsCompleted(selectedTask) ? "Selesai" : "Belum selesai"}
+              {checkIfTaskIsCompleted(selectedTask)
+                ? "Selesai"
+                : "Belum selesai"}
             </Text>
             <Text className={whiteTextStyle}>
               {selectedTask.updatedAt
@@ -330,11 +326,21 @@ export default function FormScreen() {
       <View className="flex-1" />
 
       {!checkIfTaskIsCompleted(selectedTask) && currentUserIsInvolved && (
-        <LongButton
-          label="Tandai Selesai"
-          icon={FinishTaskIcon}
-          onClick={handleFinishTask}
-        />
+        <View className="flex flex-row items-center justify-between w-full">
+          <SecondaryButton
+            label="Edit"
+            icon={EditTaskIcon}
+            onClick={handleEditTask}
+            style={{ flex: 2 }}
+          />
+          <View className="w-[8px]" />
+          <PrimaryButton
+            label="Tandai Selesai"
+            icon={FinishTaskIcon}
+            onClick={handleFinishTask}
+            style={{ flex: 5 }}
+          />
+        </View>
       )}
     </MainLayout>
   )
