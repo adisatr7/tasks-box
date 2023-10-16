@@ -1,9 +1,16 @@
-import { Platform, Text, TextInput, TextInputProps, TouchableOpacity, View } from "react-native"
-import { twMerge } from "tailwind-merge"
-import { styles } from "../../styles"
-import { SvgIcon } from "../../types"
 import { BlurView } from "expo-blur"
 import { useState } from "react"
+import {
+  NativeSyntheticEvent,
+  Platform,
+  Text,
+  TextInput,
+  TextInputProps,
+  TextInputSubmitEditingEventData,
+  TouchableOpacity,
+} from "react-native"
+import { styles } from "../../styles"
+import { SvgIcon } from "../../types"
 import ClosedEyeIcon from "../icons/ClosedEyeIcon"
 import OpenedEyeIcon from "../icons/OpenedEyeIcon"
 
@@ -16,6 +23,9 @@ type Props = {
   setValue?(value: string): void
   icon?: React.FC<SvgIcon>
   multiline?: boolean
+  ref?: React.LegacyRef<TextInput>
+  onSubmitEditing? (e: NativeSyntheticEvent<TextInputSubmitEditingEventData>): void
+  returnKeyType?: TextInputProps["returnKeyType"]
 }
 
 export default function Entry(props: Props) {
@@ -34,6 +44,10 @@ export default function Entry(props: Props) {
         className={`w-full my-[4px] flex-row px-[8px] py-[4px] text-left text-white rounded-md ${styles.glassInput}`}>
         {props.icon && <props.icon height={24} width={24} />}
         <TextInput
+          ref={props.ref}
+          returnKeyType={props.returnKeyType}
+          onSubmitEditing={props.onSubmitEditing}
+          blurOnSubmit={!props.onSubmitEditing}
           placeholder={props.placeholder}
           placeholderTextColor="#989898"
           value={props.value}

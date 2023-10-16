@@ -1,5 +1,5 @@
 import { router } from "expo-router"
-import { useState } from "react"
+import { useRef, useState } from "react"
 import { Alert, Text, TouchableOpacity } from "react-native";
 import GlassCard from "../../components/containers/GlassCard"
 import EmailIcon from "../../components/icons/EmailIcon"
@@ -16,6 +16,16 @@ import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 export default function LoginScreen() {
   const [emailInput, setEmailInput] = useState<string>("")
   const [rawPasswordInput, setRawPasswordInput] = useState<string>("")
+
+  /**
+   * Ref untuk input password.
+   */
+  const passwordRef = useRef(null)
+
+  /**
+   * Ref untuk tombol submit.
+   */
+  const submitButtonRef = useRef(null)
 
   /**
    * Hook untuk login.
@@ -84,18 +94,26 @@ export default function LoginScreen() {
 
         {/* Form */}
         <Entry
+          type="email-address"
           placeholder="Masukkan email"
+          // onSubmitEditing={() => {
+          //   setTimeout(() => {
+          //     passwordRef.current.focus()
+          //   }, 10)
+          // }}
+          returnKeyType="next"
           icon={EmailIcon}
           value={emailInput}
           setValue={setEmailInput}
-          type="email-address"
         />
         <Entry
+          type="password"
           placeholder="Masukkan kata sandi"
+          onSubmitEditing={() => handleLogin()}
+          // ref={passwordRef}
           icon={LockIcon}
           value={rawPasswordInput}
           setValue={setRawPasswordInput}
-          type="password"
         />
 
         {/* Register Button */}
@@ -106,7 +124,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         {/* Login Button */}
-        <PrimaryButton label="Masuk" onClick={handleLogin} />
+        <PrimaryButton ref={submitButtonRef} label="Masuk" onClick={handleLogin} />
       </GlassCard>
     </OnboardingLayout>
   )

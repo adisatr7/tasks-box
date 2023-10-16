@@ -7,11 +7,13 @@ type Props = {
   icon?: React.FC<SvgIcon>
   onClick?: () => void
   style?: StyleProp<ViewStyle>
+  ref?: React.Ref<TouchableOpacity>
 }
 
-export default function PrimaryButton({ label, icon: Icon, onClick, style }: Props) {
+export default function PrimaryButton({ ref, label, icon: Icon, onClick, style }: Props) {
   return (
     <TouchableOpacity
+      ref={ref}
       activeOpacity={0.5}
       onPress={() => {
         Keyboard.dismiss()
