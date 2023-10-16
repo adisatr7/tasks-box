@@ -71,7 +71,7 @@ export default function () {
       <View className={`${styles.glassOutline} absolute bottom-0 rounded-t-xl h-[65%] w-screen backdrop-filter bg-glass/80 backdrop-blur-lg blur-lg z-10`}>
 
         {/* Profile Section */}
-        <View className={`${styles.glassOutline} absolute -top-[36px] self-center w-[90%] rounded-xl h-[20%] backdrop-filter bg-glass/90 backdrop-blur-lg blur-lg items-center`}>
+        <View className={`${styles.glassOutline} absolute -top-[36px] self-center w-[90%] rounded-xl h-fit pb-[16px] backdrop-filter bg-glass/90 backdrop-blur-lg blur-lg items-center`}>
           <Image
             source={{ uri: currentUser.imageUrl }}
             style={{
