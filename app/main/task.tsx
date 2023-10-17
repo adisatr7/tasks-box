@@ -64,12 +64,13 @@ export default function FormScreen() {
    * @returns True jika user sedang terlibat di task ini.
    */
   const currentUserIsInvolved = () => {
+    let isInvolved = false
     selectedTask.involved.forEach((user) => {
       if (user.id === currentUser.id) {
-        return true
+        isInvolved = true
       }
     })
-    return false
+    return isInvolved
   }
 
 
@@ -77,17 +78,24 @@ export default function FormScreen() {
    * Fungsi untuk melibatkan user ke dalam task.
    */
   const joinTask = () => {
-    dispatch(startLoading)
+    dispatch(startLoading())
 
-    const task: Task = { ...selectedTask }
-    task.involved.push({
-      ...currentUser,
-      isCompleted: false,
-      completedAt: ""
-    })
+    const involvedUsers: InvolvedUser[] = [
+      ...selectedTask.involved,
+      {
+        ...currentUser,
+        isCompleted: false,
+        completedAt: ""
+      }
+    ]
+
+    const updatedTask: Task = {
+      ...selectedTask,
+      involved: involvedUsers
+    }
 
     updateTask
-      .mutateAsync(task)
+      .mutateAsync(updatedTask)
       .then(() => {
         queryClient.invalidateQueries(["tasks"])
         Alert.alert("Berhasil", "Anda berhasil bergabung ke task ini.")
@@ -278,20 +286,23 @@ export default function FormScreen() {
       <View className="h-[12px]" />
 
       <GlassCard>
-        <View className="flex-row items-center gap-x-[8px] pb-[4px]">
+        <View className="flex-row items-center justify-start gap-x-[15px] pb-[4px]">
           {/* Foto profil user-user terlibat */}
-          <View className="flex-row items-center w-[36px]">
+          <View className="relative flex-row items-center left-[14px] self-start gap-x-[-14px]">
             {selectedTask.involved.slice(0, 3).map((user, index) => (
               <View
                 key={index}
+                style={{ zIndex: 3 - index }}
                 className="rounded-full bg-gray-300 w-[24px] h-[24px]">
                 <Image
                   source={{ uri: user.imageUrl ?? "" }}
-                  className="w-full h-full rounded-full"
+                  className="w-full h-full rounded-full shadow-sm"
                 />
               </View>
             ))}
           </View>
+
+          <View/>
 
           {/* Berapa orang yang terlibat di task ini */}
           <Text className={whiteTextStyle}>
@@ -307,14 +318,14 @@ export default function FormScreen() {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
-                if (currentUserIsInvolved) {
+                if (currentUserIsInvolved()) {
                   handleAbandonTask()
                 } else {
                   handleJoinTask()
                 }
               }}>
               <Text className={`${whiteTextStyle} mr-[4px]`}>
-                {currentUserIsInvolved ? "Keluar" : "Gabung"}
+                {currentUserIsInvolved() ? "Keluar" : "Gabung"}
               </Text>
             </TouchableOpacity>
           )}
@@ -323,7 +334,7 @@ export default function FormScreen() {
 
       <View className="flex-1" />
 
-      {!checkIfTaskIsCompleted(selectedTask) && currentUserIsInvolved && (
+      {!checkIfTaskIsCompleted(selectedTask) && currentUserIsInvolved() && currentUserIsInvolved && (
         <View className="flex flex-row items-center justify-between w-full">
           <SecondaryButton
             label="Edit"
