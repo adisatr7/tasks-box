@@ -101,7 +101,7 @@ export default function RegisterScreen() {
       <GlassCard className="py-[12px]">
         {/* Header */}
         <View className="flex-row items-center w-full bg-red-0 h-fit">
-          <BackButton />
+          <BackButton absolute/>
           <Text className="text-center text-white text-heading-1 mt-[4px] w-full">
             Daftar Akun Baru
           </Text>
