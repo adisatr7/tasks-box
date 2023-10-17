@@ -20,11 +20,9 @@ export default function useTaskQuery() {
           title: doc.get("title"),
           madeBy: doc.get("madeBy"),
           description: doc.get("description"),
-          isCompleted: doc.get("isCompleted"),
           createdAt: doc.get("createdAt"),
           deadline: doc.get("deadline"),
           updatedAt: doc.get("updatedAt"),
-          completedAt: doc.get("completedAt"),
           involved: doc.get("involved")
         })
       })

@@ -124,7 +124,7 @@ export default function LoginScreen() {
         </TouchableOpacity>
 
         {/* Login Button */}
-        <PrimaryButton ref={submitButtonRef} label="Masuk" onClick={handleLogin} />
+        <PrimaryButton label="Masuk" onClick={handleLogin}/>
       </GlassCard>
     </OnboardingLayout>
   )

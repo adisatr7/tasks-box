@@ -2,7 +2,6 @@ import MainLayout from "../../components/layouts/MainLayout"
 import { useAppDispatch, useAppSelector } from "../../redux"
 import Header from "../../components/containers/Header"
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native"
-import { styles } from "../../styles"
 import GlassCard from "../../components/containers/GlassCard"
 import PrimaryButton from "../../components/buttons/PrimaryButton"
 import FinishTaskIcon from "../../components/icons/FinishTaskIcon"
@@ -15,6 +14,7 @@ import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
 import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 import SecondaryButton from "../../components/buttons/SecondaryButton"
 import EditTaskIcon from "../../components/icons/EditTaskIcon"
+import { selectTask, setFormMode } from "../../redux/slices/formSlice"
 
 export default function FormScreen() {
   /**
@@ -64,12 +64,13 @@ export default function FormScreen() {
    * @returns True jika user sedang terlibat di task ini.
    */
   const currentUserIsInvolved = () => {
+    let isInvolved = false
     selectedTask.involved.forEach((user) => {
       if (user.id === currentUser.id) {
-        return true
+        isInvolved = true
       }
     })
-    return false
+    return isInvolved
   }
 
 
@@ -77,17 +78,24 @@ export default function FormScreen() {
    * Fungsi untuk melibatkan user ke dalam task.
    */
   const joinTask = () => {
-    dispatch(startLoading)
+    dispatch(startLoading())
 
-    const task: Task = { ...selectedTask }
-    task.involved.push({
-      ...currentUser,
-      isCompleted: false,
-      completedAt: ""
-    })
+    const involvedUsers: InvolvedUser[] = [
+      ...selectedTask.involved,
+      {
+        ...currentUser,
+        isCompleted: false,
+        completedAt: ""
+      }
+    ]
+
+    const updatedTask: Task = {
+      ...selectedTask,
+      involved: involvedUsers
+    }
 
     updateTask
-      .mutateAsync(task)
+      .mutateAsync(updatedTask)
       .then(() => {
         queryClient.invalidateQueries(["tasks"])
         Alert.alert("Berhasil", "Anda berhasil bergabung ke task ini.")
@@ -168,19 +176,13 @@ export default function FormScreen() {
    */
   const setTaskToFinished = () => {
     dispatch(startLoading())
-
-    // Cari index user yang sedang login.
-    const userIndex = selectedTask.involved.findIndex((user) => {
-      return user.id === currentUser.id
-    })
-
     // Atur task menjadi selesai untuk user yang sedang login.
     let involvedUsers: InvolvedUser[] = []
     selectedTask.involved.forEach((user) => {
       involvedUsers.push({
         ...user,
         isCompleted: user.id === currentUser.id ? true : user.isCompleted,
-        completedAt: user.id === currentUser.id ? new Date().toISOString() : user.completedAt
+        completedAt: user.id === currentUser.id ? new Date().toISOString() : user.completedAt ?? ""
       })
     })
 
@@ -222,7 +224,11 @@ export default function FormScreen() {
    * Fungsi untuk mengedit task.
    */
   const handleEditTask = () => {
-
+    dispatch(setFormMode("edit"))
+    dispatch(selectTask(selectedTask))
+    setTimeout(() => {
+      router.push("/main/form")
+    })
   }
 
 
@@ -277,29 +283,32 @@ export default function FormScreen() {
         </View>
       </GlassCard>
 
-      <View className="h-[12px]" />
+      <View/>
 
       <GlassCard>
-        <View className="flex-row items-center gap-x-[8px] pb-[4px]">
+        <View className="flex-row items-center justify-start gap-x-[15px] pb-[4px]">
           {/* Foto profil user-user terlibat */}
-          <View className="flex-row items-center w-[36px]">
+          <View className="relative flex-row items-center left-[14px] self-start gap-x-[-14px]">
             {selectedTask.involved.slice(0, 3).map((user, index) => (
               <View
                 key={index}
+                style={{ zIndex: 3 - index }}
                 className="rounded-full bg-gray-300 w-[24px] h-[24px]">
                 <Image
                   source={{ uri: user.imageUrl ?? "" }}
-                  className="w-full h-full rounded-full"
+                  className="w-full h-full rounded-full shadow-sm"
                 />
               </View>
             ))}
           </View>
 
+          <View />
+
           {/* Berapa orang yang terlibat di task ini */}
           <Text className={whiteTextStyle}>
-            {selectedTask.involved.length} orang
+            {selectedTask.involved.length} orang{" "}
+            <Text className={grayTextStyle}>terlibat task ini</Text>
           </Text>
-          <Text className={grayTextStyle}>terlibat task ini</Text>
 
           {/* Space kosong */}
           <View className="flex-1" />
@@ -309,39 +318,75 @@ export default function FormScreen() {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => {
-                if (currentUserIsInvolved) {
+                if (currentUserIsInvolved()) {
                   handleAbandonTask()
                 } else {
                   handleJoinTask()
                 }
               }}>
               <Text className={`${whiteTextStyle} mr-[4px]`}>
-                {currentUserIsInvolved ? "Keluar" : "Gabung"}
+                {currentUserIsInvolved() ? "Keluar" : "Gabung"}
               </Text>
             </TouchableOpacity>
           )}
         </View>
       </GlassCard>
 
-      <View className="flex-1" />
 
-      {!checkIfTaskIsCompleted(selectedTask) && currentUserIsInvolved && (
-        <View className="flex flex-row items-center justify-between w-full">
-          <SecondaryButton
-            label="Edit"
-            icon={EditTaskIcon}
-            onClick={handleEditTask}
-            style={{ flex: 2 }}
-          />
-          <View className="w-[8px]" />
-          <PrimaryButton
-            label="Tandai Selesai"
-            icon={FinishTaskIcon}
-            onClick={handleFinishTask}
-            style={{ flex: 5 }}
-          />
-        </View>
+      {selectedTask.involved.length > 0 && (
+        <>
+          <Text className="text-bright-gray text-heading-2 pb-[14px] pt-[12px]">
+            Aktivitas
+          </Text>
+
+          {selectedTask.involved
+            .filter((user) => user.isCompleted)
+            .map((user) => (
+              <>
+                <GlassCard>
+                  <View className="flex-row items-center gap-x-[8px] px-[2px]">
+                    <Image
+                      source={{ uri: user.imageUrl }}
+                      className="w-[24px] h-[24px] rounded-full shadow-sm"
+                    />
+                    <Text className="text-body text-white">
+                      {user.firstName}
+                    </Text>
+                    <Text className="text-body text-dark-gray">
+                      selesai pada
+                    </Text>
+                    <Text className="text-body text-white">
+                      {convertDate(user.completedAt)}
+                    </Text>
+                  </View>
+                </GlassCard>
+              </>
+            ))
+          }
+        </>
       )}
+
+      <View className="flex-1"/>
+
+      {!checkIfTaskIsCompleted(selectedTask) &&
+        currentUserIsInvolved() &&
+        currentUserIsInvolved && (
+          <View className="flex flex-row items-center justify-between w-full">
+            <SecondaryButton
+              label="Edit"
+              icon={EditTaskIcon}
+              onClick={handleEditTask}
+              style={{ flex: 2 }}
+            />
+            <View className="w-[8px]" />
+            <PrimaryButton
+              label="Tandai Selesai"
+              icon={FinishTaskIcon}
+              onClick={handleFinishTask}
+              style={{ flex: 5 }}
+            />
+          </View>
+        )}
     </MainLayout>
   )
 }

@@ -14,6 +14,8 @@ import { useQueryClient } from "react-query"
 import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 import LoadingOverlay from "../../components/layouts/LoadingOverlay"
 import useUpdateTask from "../../hooks/useUpdateTask"
+import SubmitEditUserIcon from "../../components/icons/SubmitEditUserIcon"
+import { Task } from "../../types"
 
 export default function FormScreen() {
   const [judulInput, setJudulInput] = useState<string>("")
@@ -61,7 +63,7 @@ export default function FormScreen() {
     dispatch(startLoading())
     setJudulInput(selectedTask?.title || "")
     setHasDeadline(!!selectedTask?.deadline)
-    setDeadline(new Date(selectedTask?.deadline || ""))
+    setDeadline(new Date(selectedTask?.deadline || new Date()))
     setDescInput(selectedTask?.description || "")
     setTimeout(() => {
       dispatch(endLoading())
@@ -69,7 +71,7 @@ export default function FormScreen() {
   }, [selectedTask])
 
 
-  const getInputData = () => {
+  const getInputData = (): Task => {
     return {
       title: judulInput,
       madeBy: currentUser,
@@ -88,6 +90,15 @@ export default function FormScreen() {
   }
 
 
+  const mutate = async () => {
+    if (mode === "add")
+      return createTaskMutation.mutateAsync(getInputData())
+
+    else
+      return updateTaskMutation.mutateAsync(getInputData())
+  }
+
+
   /**
    * Fungsi untuk menghandle submit form.
    */
@@ -101,11 +112,7 @@ export default function FormScreen() {
     dispatch(startLoading())
 
     // Lakukan request ke API untuk membuat task baru
-    if (mode === "add")
-      createTaskMutation.mutateAsync(getInputData())
-
-    else
-      updateTaskMutation.mutateAsync(getInputData())
+    mutate()
 
       // Jika berhasil, kembali ke halaman sebelumnya
       .then(() => {
@@ -129,7 +136,12 @@ export default function FormScreen() {
 
   return (
     <MainLayout>
-      <Header position="left" title="Buat Task Baru" />
+      <Header
+        position="left"
+        title={mode === "add"
+          ? "Buat Task Baru"
+          : selectedTask.title}
+      />
 
       {/* Forms */}
       <View className="flex-col gap-y-[8px] h-fit">
@@ -162,16 +174,20 @@ export default function FormScreen() {
           value={descInput}
           setValue={setDescInput}
         />
-        <View />
+        <View/>
       </View>
 
       <View className="flex-1" />
 
       {/* Tombol Submit */}
       <PrimaryButton
-        icon={AddTaskicon}
         onClick={handleSubmit}
-        label="Tambah Task"
+        icon={mode === "add"
+          ? AddTaskicon
+          : SubmitEditUserIcon}
+        label={mode === "add"
+          ? "Tambah Task"
+          : "Simpan Perubahan"}
       />
     </MainLayout>
   )

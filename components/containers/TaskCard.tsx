@@ -57,14 +57,15 @@ export default function TaskCard({ task }: Props) {
         </View>
 
         {/* Foto profil user-user terlibat */}
-        <View className="flex-row-col items-center w-[36px]">
+        <View className="flex-row items-center justify-end gap-x-[-14px]">
           {task.involved.slice(0, 3).map((user, index) => (
             <View
               key={index}
-              className="rounded-full bg-gray-300 w-[24px] h-[24px]">
+              style={{ zIndex: 3 - index }}
+              className="rounded-full bg-gray-300 w-[24px] h-[24px] flex-row">
               <Image
                 source={{ uri: user.imageUrl ?? "" }}
-                className="w-full h-full rounded-full"
+                className="w-full h-full rounded-full shadow-sm"
               />
             </View>
           ))}

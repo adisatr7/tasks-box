@@ -8,6 +8,9 @@ import ProfileButton from "../../components/buttons/ProfileButton"
 import LogoutButton from "../../components/buttons/LogoutButton"
 import { removeCurrentUser } from "../../redux/slices/authSlice"
 import { router } from "expo-router"
+import { signOut } from "firebase/auth"
+import { auth } from "../../firebase"
+import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 
 
 export default function () {
@@ -27,11 +30,16 @@ export default function () {
    * Menghandle tombol logout.
    */
   const handleLogout = () => {
+    dispatch(startLoading())
     router.back()
     setTimeout(() => {
       router.replace("/onboarding/login")
+      signOut(auth)
       dispatch(removeCurrentUser())
     }, 10)
+    setTimeout(() => {
+      dispatch(endLoading())
+    }, 20)
   }
 
 
@@ -93,11 +101,11 @@ export default function () {
         {/* Buttons */}
         <View className="mx-[18px] mt-[90px] flex-1 pb-[28px]">
           <ProfileButton label="Edit Profil" onClick={handleEditProfile}/>
-          <ProfileButton label="Ganti Kata Sandi" onClick={handleEditPassword}/>
+          <ProfileButton label="Ganti Kata Sandi (Tidak tersedia)" onClick={handleEditPassword} disabled/>
 
           <View className="flex-1"/>
 
-          <Text className="text-center text-dark-gray/90 text-caption pb-[4px]">App Version 1.0.0</Text>
+          <Text className="text-center text-dark-gray/90 text-caption pb-[4px]">App Version: Demo Build 1</Text>
           <LogoutButton label="Logout" onClick={handleLogout}/>
         </View>
       </View>
