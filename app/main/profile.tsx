@@ -10,6 +10,7 @@ import { removeCurrentUser } from "../../redux/slices/authSlice"
 import { router } from "expo-router"
 import { signOut } from "firebase/auth"
 import { auth } from "../../firebase"
+import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 
 
 export default function () {
@@ -29,12 +30,16 @@ export default function () {
    * Menghandle tombol logout.
    */
   const handleLogout = () => {
+    dispatch(startLoading())
     router.back()
     setTimeout(() => {
       router.replace("/onboarding/login")
       signOut(auth)
       dispatch(removeCurrentUser())
     }, 10)
+    setTimeout(() => {
+      dispatch(endLoading())
+    }, 20)
   }
 
 
