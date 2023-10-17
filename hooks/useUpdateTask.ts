@@ -10,7 +10,7 @@ export default function useUpdateTask() {
   return useMutation({
     mutationFn: async (task: Task) => {
       const ref = doc(db, "tasks", task.id)
-      return Promise.resolve(await updateDoc(ref, task))
+      return await updateDoc(ref, task)
     },
     onError: (error: any) => {
       return Promise.reject(new Error(error.message))

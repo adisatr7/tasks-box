@@ -2,7 +2,6 @@ import MainLayout from "../../components/layouts/MainLayout"
 import { useAppDispatch, useAppSelector } from "../../redux"
 import Header from "../../components/containers/Header"
 import { Alert, Image, Text, TouchableOpacity, View } from "react-native"
-import { styles } from "../../styles"
 import GlassCard from "../../components/containers/GlassCard"
 import PrimaryButton from "../../components/buttons/PrimaryButton"
 import FinishTaskIcon from "../../components/icons/FinishTaskIcon"
@@ -15,6 +14,7 @@ import checkIfTaskIsCompleted from "../../utils/checkIfTaskIsCompleted"
 import { endLoading, startLoading } from "../../redux/slices/layoutSlice"
 import SecondaryButton from "../../components/buttons/SecondaryButton"
 import EditTaskIcon from "../../components/icons/EditTaskIcon"
+import { selectTask, setFormMode } from "../../redux/slices/formSlice"
 
 export default function FormScreen() {
   /**
@@ -168,19 +168,13 @@ export default function FormScreen() {
    */
   const setTaskToFinished = () => {
     dispatch(startLoading())
-
-    // Cari index user yang sedang login.
-    const userIndex = selectedTask.involved.findIndex((user) => {
-      return user.id === currentUser.id
-    })
-
     // Atur task menjadi selesai untuk user yang sedang login.
     let involvedUsers: InvolvedUser[] = []
     selectedTask.involved.forEach((user) => {
       involvedUsers.push({
         ...user,
         isCompleted: user.id === currentUser.id ? true : user.isCompleted,
-        completedAt: user.id === currentUser.id ? new Date().toISOString() : user.completedAt
+        completedAt: user.id === currentUser.id ? new Date().toISOString() : user.completedAt ?? ""
       })
     })
 
@@ -222,7 +216,11 @@ export default function FormScreen() {
    * Fungsi untuk mengedit task.
    */
   const handleEditTask = () => {
-
+    dispatch(setFormMode("edit"))
+    dispatch(selectTask(selectedTask))
+    setTimeout(() => {
+      router.push("/main/form")
+    })
   }
 
 
