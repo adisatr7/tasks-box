@@ -2,6 +2,21 @@
 
 Tasks Box is a mobile app built with **React Native** and **Expo** designed to enhance task management and collaboration while adding a touch of gamification to keep users engaged. It leans on Firebase for the backend, ensuring seamless handling of authentication, database, and storage services.
 
+### Login Screen
+![loginscreen](docs/loginscreen.png)
+
+### Register Screen
+![registerscreen](docs/registerscreen.png)
+
+### Home Screen
+![homescreen](docs/homescreen.png)
+
+### Task Screen
+![taskscreen](docs/taskscreen.png)
+
+### Profile Screen
+![profilescreen](docs/profilescreen.png)
+
 
 ## Table of Contents
 
