@@ -3,6 +3,7 @@ import { styles } from "../../styles"
 import image from "../../assets/backgrounds/main.jpg"
 import { StatusBar as Status } from "react-native"
 import LoadingOverlay from "./LoadingOverlay"
+import { StatusBar } from "expo-status-bar"
 
 
 type MainLayoutProps = {
@@ -17,6 +18,7 @@ export default function MainLayout({ blurAmount=5, children }: MainLayoutProps) 
       blurRadius={blurAmount}
       resizeMode="cover"
       className="top-0 h-full -z-10">
+      <StatusBar style="light"/>
       <View
         className={`absolute z-0 flex w-full h-full blur-lg ${styles.mainOverlay}`}
       />

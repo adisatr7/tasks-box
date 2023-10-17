@@ -8,6 +8,8 @@ import ProfileButton from "../../components/buttons/ProfileButton"
 import LogoutButton from "../../components/buttons/LogoutButton"
 import { removeCurrentUser } from "../../redux/slices/authSlice"
 import { router } from "expo-router"
+import { signOut } from "firebase/auth"
+import { auth } from "../../firebase"
 
 
 export default function () {
@@ -30,6 +32,7 @@ export default function () {
     router.back()
     setTimeout(() => {
       router.replace("/onboarding/login")
+      signOut(auth)
       dispatch(removeCurrentUser())
     }, 10)
   }
