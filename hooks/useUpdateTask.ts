@@ -5,8 +5,6 @@ import { Task } from "../types"
 
 
 export default function useUpdateTask() {
-  // const queryClient = useQueryClient()
-
   return useMutation({
     mutationFn: async (task: Task) => {
       const ref = doc(db, "tasks", task.id)
