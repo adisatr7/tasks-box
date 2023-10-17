@@ -18,6 +18,7 @@ import OpenedEyeIcon from "../icons/OpenedEyeIcon"
 type Props = {
   label?: string
   placeholder?: string
+  disabled?: boolean
   value?: string
   type?: TextInputProps["keyboardType"] | "password"
   setValue?(value: string): void
@@ -41,10 +42,14 @@ export default function Entry(props: Props) {
       <BlurView
         tint="dark"
         intensity={10}
-        className={`w-full my-[4px] flex-row px-[8px] py-[4px] text-left text-white rounded-md ${styles.glassInput}`}>
+        className={`w-full my-[4px] flex-row px-[8px] py-[4px] text-left text-white rounded-md
+          ${styles.glassInput}
+          ${props.disabled && "opacity-70"}
+        `}>
         {props.icon && <props.icon height={24} width={24} />}
         <TextInput
           ref={props.ref}
+          editable={!props.disabled}
           returnKeyType={props.returnKeyType}
           onSubmitEditing={props.onSubmitEditing}
           blurOnSubmit={!props.onSubmitEditing}
@@ -60,7 +65,8 @@ export default function Entry(props: Props) {
           textAlignVertical={props.multiline ? "top" : "auto"}
           keyboardType={props.type === "password" ? "default" : props.type}
           secureTextEntry={props.type === "password" && isHidden}
-          className={`flex-1 ml-[6px] text-white
+          className={`flex-1 ml-[6px]
+            ${props.disabled ? "text-bright-gray" : "text-white"}
             ${Platform.OS === "android" && props.multiline && "top-[8px]"}
           `}
           style={{ height: props.multiline ? Math.max(height, 96) : 24 }}/>

@@ -1,18 +1,21 @@
-import { db, storage } from "../firebase/index";
+import { auth, db, storage } from "../firebase/index";
 import { useMutation } from "react-query"
 import { collection, doc, updateDoc } from "firebase/firestore";
 import { User } from "../types"
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage"
+import { reauthenticateWithCredential, signInWithCredential, signInWithEmailAndPassword, updateEmail } from "firebase/auth"
 
 
 export default function useUpdateUser() {
   type Params = {
     user: User
     imageIsChanged: boolean
+    emailIsChanged: boolean
+    passwordAuth: string
   }
 
   return useMutation({
-    mutationFn: async ({ user, imageIsChanged }: Params) => {
+    mutationFn: async ({ user, imageIsChanged, emailIsChanged, passwordAuth }: Params) => {
       const userDataRef = doc(db, "users", user.id)
       // Jika image diubah, upload gambar ke cloud
       if (imageIsChanged) {
@@ -20,7 +23,16 @@ export default function useUpdateUser() {
         user.imageUrl = imageUrl
       }
 
-      return await updateDoc(userDataRef, user)
+      return updateDoc(userDataRef, user)
+
+        // JIka update data berhasil, update email auth
+        .then(async () => {
+          if (emailIsChanged) {
+            // const userCredential = await signInWithEmailAndPassword(auth, user.email, passwordAuth)
+            // reauthenticateWithCredential(auth.currentUser!)
+            await updateEmail(auth.currentUser!, user.email)
+          }
+        })
     },
     onError: (error: any) => {
       return Promise.reject(new Error(error.message))

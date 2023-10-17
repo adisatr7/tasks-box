@@ -16,6 +16,7 @@ import useUpdateUser from "../../hooks/useUpdateUser"
 import { setCurrentUser } from "../../redux/slices/authSlice"
 import { User } from "../../types"
 import { router } from "expo-router"
+import LockIcon from "../../components/icons/LockIcon"
 
 export default function EditProfilePage() {
   /**
@@ -29,11 +30,14 @@ export default function EditProfilePage() {
   const currentUser = useAppSelector((state) => state.auth.currentUser)
 
   const [imageUrlInput, setImageUrlInput] = useState<string>("")
-  const [imageIsChanged, setImageIsChanged] = useState<boolean>(false)
   const [firstNameInput, setFirstNameInput] = useState<string>("")
   const [lastNameInput, setLastNameInput] = useState<string>("")
   const [emailInput, setEmailInput] = useState<string>("")
+  const [passwordInput, setPasswordInput] = useState<string>("")
   const [positionInput, setPositionInput] = useState<string>("")
+
+  const [imageIsChanged, setImageIsChanged] = useState<boolean>(false)
+  const [emailIsChanged, setEmailIsChanged] = useState<boolean>(false)
 
   // Set input value dari data user sekarang
   useEffect(() => {
@@ -45,6 +49,24 @@ export default function EditProfilePage() {
       setPositionInput(currentUser.position)
     }
   }, [])
+
+  // Cek apakah foto profil berubah
+  useEffect(() => {
+    if (imageUrlInput !== currentUser?.imageUrl) {
+      setImageIsChanged(true)
+    } else {
+      setImageIsChanged(false)
+    }
+  }, [imageUrlInput])
+
+  // Cek apakah email berubah
+  useEffect(() => {
+    if (emailInput !== currentUser?.email) {
+      setEmailIsChanged(true)
+    } else {
+      setEmailIsChanged(false)
+    }
+  }, [emailInput])
 
 
   /**
@@ -71,6 +93,14 @@ export default function EditProfilePage() {
       return
     }
 
+    if (emailIsChanged && !passwordInput) {
+      Alert.alert(
+        "Kata sandi kosong",
+        "Untuk mengubah email Anda, mohon masukkan kata sandi Anda."
+      )
+      return
+    }
+
     dispatch(startLoading())
 
     const updatedUserData: User = {
@@ -86,7 +116,9 @@ export default function EditProfilePage() {
     await updateUserMutation
       .mutateAsync({
         user: updatedUserData,
-        imageIsChanged
+        imageIsChanged,
+        emailIsChanged,
+        passwordAuth: passwordInput
       })
       .then(() => {
         // Jika sukses, simpan data user ke Redux state
@@ -107,7 +139,7 @@ export default function EditProfilePage() {
 
   return (
     <MainLayout>
-      <Header position="left" title="Edit Profil"/>
+      <Header position="left" title="Edit Profil" />
       <View className="flex-1" />
       <GlassCard>
         {/* Upload picture */}
@@ -120,34 +152,57 @@ export default function EditProfilePage() {
         </View>
 
         {/* Form */}
-        <View className="flex-row justify-between w-[49%]">
-          <Entry
-            placeholder="Nama depan"
-            icon={NameIcon}
-            value={firstNameInput}
-            setValue={setFirstNameInput}
-          />
+        <View className="flex-row justify-between w-full items-end">
+          <View className="flex-1 flex-col">
+            <Entry
+              // label="Nama lengkap"
+              placeholder="Nama depan"
+              returnKeyType="next"
+              icon={NameIcon}
+              value={firstNameInput}
+              setValue={setFirstNameInput}
+            />
+          </View>
           <View className="w-[6px]" />
-          <Entry
-            placeholder="Nama belakang"
-            value={lastNameInput}
-            setValue={setLastNameInput}
-          />
+          <View className="flex-1 flex-col">
+            <Entry
+              placeholder="Nama belakang"
+              returnKeyType="next"
+              value={lastNameInput}
+              setValue={setLastNameInput}
+            />
+          </View>
         </View>
-        <Entry
+        {/* <Entry
+          // label="Alamat email"
+          disabled
           placeholder="Masukkan email"
+          type="email-address"
+          returnKeyType="next"
           icon={EmailIcon}
           value={emailInput}
           setValue={setEmailInput}
-        />
+        /> */}
+        {emailIsChanged && (
+          <Entry
+            // label="Kata sandi sekarang"
+            placeholder="Masukkan sandi untuk mengubah email"
+            type="password"
+            returnKeyType="next"
+            icon={LockIcon}
+            value={passwordInput}
+            setValue={setPasswordInput}
+          />
+        )}
         <Entry
+          // label="Jabatan"
           placeholder="Masukkan jabatan"
           icon={BriefcaseIcon}
           value={positionInput}
           setValue={setPositionInput}
         />
       </GlassCard>
-      <View className="flex-1"/>
+      <View className="flex-1" />
       <PrimaryButton
         label="Simpan Perubahan"
         icon={SubmitEditUserIcon}
