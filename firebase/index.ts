@@ -2,15 +2,16 @@ import { initializeApp } from "firebase/app"
 import { getAuth } from "firebase/auth"
 import { getFirestore } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
+import env from "../env"
 
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAOLlhMD_jCbJjW6SFnnCLOqG8Ka9uSyEE",
-  authDomain: "lyrid-crud-test.firebaseapp.com",
-  projectId: "lyrid-crud-test",
-  storageBucket: "lyrid-crud-test.appspot.com",
-  messagingSenderId: "542152688657",
-  appId: "1:542152688657:web:ed7e812bbf0a99857f5db0"
+  apiKey: env.API_KEY,
+  authDomain: env.AUTH_DOMAIN,
+  projectId: env.PROJECT_ID,
+  storageBucket: env.STORAGE_BUCKET,
+  messagingSenderId: env.MSG_SENDER_ID,
+  appId: env.APP_ID
 }
 
 // Initialize Firebase
