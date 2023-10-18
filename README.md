@@ -2,6 +2,19 @@
 
 Tasks Box is a mobile app built with **React Native** and **Expo** designed to enhance task management and collaboration while adding a touch of gamification to keep users engaged. It leans on Firebase for the backend, ensuring seamless handling of authentication, database, and storage services.
 
+
+## Table of Contents
+
+- [Screenshots](#screenshots)
+- [Demo](#demo)
+- [Development Setup](#development-setup)
+- [License](#license)
+- [Stay Connected](#stay-connected)
+- [External Links](#external-links)
+
+
+## Screenshots
+
 ### Login Screen
 ![loginscreen](docs/loginscreen.png)
 
@@ -18,17 +31,11 @@ Tasks Box is a mobile app built with **React Native** and **Expo** designed to e
 ![profilescreen](docs/profilescreen.png)
 
 
-## Table of Contents
-
-- [Demo](#demo)
-- [Development Setup](#development-setup)
-- [License](#license)
-- [Stay Connected](#stay-connected)
-
-
 ## Demo
 
-You can download the pre-built APK of Tasks Box from the [**Releases**](https://github.com/your-username/tasks-box/releases) section to run it on your phone. Choose the latest release and download the APK compatible with your Android device. After downloading, install the APK on your device and start using Tasks Box.
+You can download the pre-built APK of Tasks Box from the [**Releases**](https://github.com/adisatr7/tasks-box/releases) section to run it on your phone. As of right now, only Android devices are supported.
+
+Choose the latest release and download the APK compatible with your Android device. After downloading, install the APK on your device and start using Tasks Box.
 
 
 ## Development Setup
@@ -86,3 +93,9 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 ## Stay Connected
 
 For any inquiries, collaboration opportunities, or feedback, please feel free to reach out via email at: adisatr7@gmail.com
+
+## External Links
+
+* [**Figma design file**](https://www.figma.com/file/swJhshdqtw0FfQ8wCUSm32/lyrid-crud?type=design&node-id=0%3A1&mode=design&t=3YevdXdZ9IlGnQ3i-1) for this project
+* [**Instagram**](https://www.instagram.com/raddox7/)
+* [**LinkedIn**](https://www.linkedin.com/in/adisatr7/)
