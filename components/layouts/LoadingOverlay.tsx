@@ -1,5 +1,5 @@
 import AnimatedLottieView from "lottie-react-native"
-import { Text, View } from "react-native"
+import { View } from "react-native"
 import { useAppSelector } from "../../redux"
 import { useRef } from "react"
 import loadingAnimation from "../../assets/animations/loading.json"
@@ -15,22 +15,21 @@ export default function LoadingOverlay() {
   /**
    * Ref untuk animasi loading.
    */
-  const animationRef = useRef(null)
+  // const animationRef = useRef(null)
 
 
   if (isLoading) {
     return (
-      <View className="absolute z-50 items-center self-center justify-center w-screen h-screen bg-black/70">
+      <View className="absolute z-50 items-center self-center justify-center w-full h-full bg-black/70">
         <AnimatedLottieView
           autoPlay
-          ref={animationRef}
+          // ref={animationRef}
           source={loadingAnimation}
           style={{
             width: 100,
             height: 100
           }}
         />
-        {/* <Text className="text-white text-body">Memuat...</Text> */}
       </View>
     )
   }
