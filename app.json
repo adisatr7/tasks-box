@@ -4,32 +4,34 @@
     "slug": "tasks-box",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icons/icon.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/icons/appicon.png",
+    "userInterfaceStyle": "dark",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/backgrounds/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#5D20D2"
     },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.raddox7.tasksbox"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/icons/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
+      // "adaptiveIcon": {
+      //   "foregroundImage": "./assets/icons/appicon.png",
+      //   "backgroundColor": "#5D20D2"
+      // },
       "permissions": [
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.raddox7.tasksbox"
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
+    "androidStatusBar": {
+      "barStyle": "light-content",
+      "translucent": true,
+      "backgroundColor": "#00000000"
     },
     "plugins": [
       [
